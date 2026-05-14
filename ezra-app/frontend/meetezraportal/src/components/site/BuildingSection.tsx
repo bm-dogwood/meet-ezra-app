@@ -42,6 +42,16 @@ export function BuildingSection() {
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     let raf = 0;
@@ -85,7 +95,7 @@ export function BuildingSection() {
           }}
         />
 
-        <div className="relative mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-8 px-6 lg:grid-cols-12 lg:gap-12 lg:px-10">
+        <div className="relative mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-6 px-4 md:gap-8 lg:grid-cols-12 lg:gap-12 lg:px-10">
           {/* LEFT: steps */}
           <div className="lg:col-span-5">
             <SectionHeader
@@ -93,14 +103,14 @@ export function BuildingSection() {
               title="Watch the operational layer assemble itself."
             />
 
-            <ol className="mt-8 space-y-1">
+            <ol className="mt-6 space-y-2 md:mt-8 md:space-y-1">
               {STEPS.map((s, i) => {
                 const isActive = i === active;
                 const isDone = i < active;
                 return (
                   <li
                     key={s.n}
-                    className="relative flex gap-4 rounded-xl px-3 py-3 transition-all duration-500"
+                    className="relative flex gap-3 rounded-xl px-3 py-3 transition-all duration-500 md:gap-4"
                     style={{
                       background: isActive ? BLUE_DIM : "transparent",
                       border: `1px solid ${
@@ -113,7 +123,7 @@ export function BuildingSection() {
                     {/* Step indicator */}
                     <div className="flex w-6 flex-col items-center pt-1">
                       <span
-                        className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-mono transition-all duration-500"
+                        className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-mono transition-all duration-500 md:h-5 md:w-5"
                         style={{
                           background: isActive
                             ? BLUE
@@ -146,10 +156,10 @@ export function BuildingSection() {
                       )}
                     </div>
 
-                    <div className="flex-1 pb-3">
-                      <div className="flex items-center justify-between">
+                    <div className="flex-1 pb-2 md:pb-3">
+                      <div className="flex flex-col items-start justify-between gap-1 md:flex-row md:items-center md:gap-0">
                         <span
-                          className="font-mono text-[10px] uppercase tracking-[0.22em]"
+                          className="font-mono text-[9px] uppercase tracking-[0.22em] md:text-[10px]"
                           style={{
                             color: isActive ? BLUE : "var(--muted-foreground)",
                           }}
@@ -158,7 +168,7 @@ export function BuildingSection() {
                         </span>
                         {isActive && (
                           <span
-                            className="rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider"
+                            className="rounded-full px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-wider md:px-2 md:text-[9px]"
                             style={{
                               background: BLUE_DIM,
                               color: BLUE,
@@ -169,18 +179,18 @@ export function BuildingSection() {
                           </span>
                         )}
                       </div>
-                      <h4 className="mt-2 text-[15px] font-medium leading-snug tracking-tight">
+                      <h4 className="mt-2 text-[14px] font-medium leading-snug tracking-tight md:text-[15px]">
                         {s.title}
                       </h4>
                       <div
                         style={{
-                          maxHeight: isActive ? "80px" : "0",
+                          maxHeight: isActive ? "100px" : "0",
                           overflow: "hidden",
                           transition:
                             "max-height 500ms cubic-bezier(0.16,1,0.3,1)",
                         }}
                       >
-                        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                        <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground md:text-[13px]">
                           {s.body}
                         </p>
                       </div>
@@ -191,9 +201,13 @@ export function BuildingSection() {
             </ol>
           </div>
 
-          {/* RIGHT: pipeline visual - reduced height and better alignment */}
+          {/* RIGHT: pipeline visual - responsive */}
           <div className="lg:col-span-6 lg:col-start-7">
-            <BuildVisual active={active} progress={progress} />
+            <BuildVisual
+              active={active}
+              progress={progress}
+              isMobile={isMobile}
+            />
           </div>
         </div>
 
@@ -216,7 +230,7 @@ export function BuildingSection() {
   );
 }
 
-// ─── Build Visual with reduced height ──────────────────────────────────────────
+// ─── Build Visual with responsive behavior ──────────────────────────────────────────
 
 const SOURCES = ["Toast", "Square", "Aloha", "Revel", "Lightspeed", "Clover"];
 const ANOMALIES = [
@@ -235,9 +249,11 @@ const SEV_COLOR: Record<string, string> = {
 function BuildVisual({
   active,
   progress,
+  isMobile,
 }: {
   active: number;
   progress: number;
+  isMobile: boolean;
 }) {
   const local = progress * STEPS.length - active;
 
@@ -245,7 +261,7 @@ function BuildVisual({
     <div
       className="relative w-full overflow-hidden rounded-2xl"
       style={{
-        height: "440px", // Reduced fixed height instead of aspect ratio
+        height: isMobile ? "380px" : "440px",
         background: "var(--background)",
         border: `1px solid ${BLUE_MID}`,
         boxShadow: `0 0 0 1px oklch(0.58 0.22 245 / 0.08), 0 40px 100px -20px oklch(0.58 0.22 245 / 0.15)`,
@@ -253,31 +269,38 @@ function BuildVisual({
     >
       {/* Chrome header */}
       <div
-        className="flex items-center justify-between px-5 py-2.5"
+        className="flex items-center justify-between px-3 py-2 md:px-5 md:py-2.5"
         style={{ borderBottom: `1px solid ${BLUE_DIM}` }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 md:gap-2">
           <span
             className="inline-block h-1.5 w-1.5 rounded-full"
             style={{ background: BLUE, boxShadow: BLUE_GLOW }}
           />
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+          <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-muted-foreground md:text-[10px]">
             ezra · build pipeline
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           {STEPS.map((_, i) => (
             <span
               key={i}
               className="h-1 rounded-full transition-all duration-500"
               style={{
-                width: i === active ? "20px" : "6px",
+                width:
+                  i === active
+                    ? isMobile
+                      ? "16px"
+                      : "20px"
+                    : isMobile
+                    ? "4px"
+                    : "6px",
                 background: i <= active ? BLUE : "var(--border-strong)",
                 opacity: i <= active ? 1 : 0.4,
               }}
             />
           ))}
-          <span className="ml-1 font-mono text-[10px] text-muted-foreground">
+          <span className="ml-0.5 font-mono text-[8px] text-muted-foreground md:ml-1 md:text-[10px]">
             {active + 1}/{STEPS.length}
           </span>
         </div>
@@ -285,24 +308,34 @@ function BuildVisual({
 
       <div
         className="relative"
-        style={{ height: "calc(100% - 42px)", padding: "16px" }}
+        style={{
+          height: "calc(100% - 42px)",
+          padding: isMobile ? "12px" : "16px",
+        }}
       >
         {/* ── LAYER 1: Source tiles ── */}
-        <div style={{ position: "absolute", top: 16, left: 16, right: 16 }}>
+        <div
+          style={{
+            position: "absolute",
+            top: isMobile ? 12 : 16,
+            left: isMobile ? 12 : 16,
+            right: isMobile ? 12 : 16,
+          }}
+        >
           <div
-            className="mb-1.5 font-mono text-[9px] uppercase tracking-wider"
+            className="mb-1 font-mono text-[8px] uppercase tracking-wider md:mb-1.5 md:text-[9px]"
             style={{ color: BLUE, opacity: 0.7 }}
           >
             § POS Sources
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-1.5 md:grid-cols-3 md:gap-2">
             {SOURCES.map((s, i) => {
               const visible = active >= 0;
               const barW = visible ? 55 + ((i * 13 + active * 9) % 38) : 0;
               return (
                 <div
                   key={s}
-                  className="rounded-lg px-3 py-1.5"
+                  className="rounded-lg px-2 py-1 md:px-3 md:py-1.5"
                   style={{
                     background: `oklch(0.12 0.01 245)`,
                     border: `1px solid ${BLUE_DIM}`,
@@ -314,9 +347,11 @@ function BuildVisual({
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-medium">{s}</span>
+                    <span className="text-[9px] font-medium md:text-[11px]">
+                      {s}
+                    </span>
                     <span
-                      className="h-1.5 w-1.5 rounded-full"
+                      className="h-1 w-1 rounded-full md:h-1.5 md:w-1.5"
                       style={{
                         background: BLUE,
                         boxShadow: `0 0 6px ${BLUE}`,
@@ -326,7 +361,7 @@ function BuildVisual({
                     />
                   </div>
                   <div
-                    className="mt-1.5 h-0.5 w-full overflow-hidden rounded-full"
+                    className="mt-1 h-0.5 w-full overflow-hidden rounded-full md:mt-1.5"
                     style={{ background: BLUE_DIM }}
                   >
                     <div
@@ -344,9 +379,9 @@ function BuildVisual({
           </div>
         </div>
 
-        {/* ── SVG connector lines (reduced height adjustments) ── */}
+        {/* ── SVG connector lines (responsive adjustments) ── */}
         <svg
-          viewBox="0 0 560 420"
+          viewBox={isMobile ? "0 0 280 360" : "0 0 560 420"}
           preserveAspectRatio="none"
           style={{
             position: "absolute",
@@ -377,18 +412,20 @@ function BuildVisual({
               </feMerge>
             </filter>
           </defs>
-          {/* Adjusted line coordinates for smaller height */}
           {Array.from({ length: 6 }).map((_, i) => {
-            const x = 48 + i * 94;
+            const x = isMobile ? 20 + i * 40 : 48 + i * 94;
             const drawn = active >= 1 ? 1 : 0;
-            const len = 180;
+            const len = isMobile ? 80 : 180;
+            const y1 = isMobile ? 100 : 120;
+            const y2 = isMobile ? 200 : 230;
+            const x2 = isMobile ? 140 : 280;
             return (
               <line
                 key={i}
                 x1={x}
-                y1={120}
-                x2={280}
-                y2={230}
+                y1={y1}
+                x2={x2}
+                y2={y2}
                 stroke="url(#bg-blue)"
                 strokeWidth="1.5"
                 strokeDasharray={len}
@@ -402,14 +439,17 @@ function BuildVisual({
           })}
           {active >= 2 &&
             Array.from({ length: 4 }).map((_, i) => {
-              const x2 = 90 + i * 128;
+              const x2 = isMobile ? 30 + i * 70 : 90 + i * 128;
+              const y1 = isMobile ? 250 : 290;
+              const y2 = isMobile ? 290 : 340;
+              const x1 = isMobile ? 140 : 280;
               return (
                 <line
                   key={`d-${i}`}
-                  x1="280"
-                  y1="290"
+                  x1={x1}
+                  y1={y1}
                   x2={x2}
-                  y2="340"
+                  y2={y2}
                   stroke="oklch(0.58 0.22 245)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
@@ -420,10 +460,10 @@ function BuildVisual({
             })}
           {active >= 3 && (
             <line
-              x1="280"
-              y1="380"
-              x2="280"
-              y2="400"
+              x1={isMobile ? 140 : 280}
+              y1={isMobile ? 320 : 380}
+              x2={isMobile ? 140 : 280}
+              y2={isMobile ? 340 : 400}
               stroke="oklch(0.58 0.22 245)"
               strokeWidth="2"
               opacity="0.8"
@@ -437,15 +477,15 @@ function BuildVisual({
           style={{
             position: "absolute",
             left: "50%",
-            top: "44%",
+            top: isMobile ? "46%" : "44%",
             transform: `translate(-50%, -50%) scale(${active >= 1 ? 1 : 0.88})`,
             opacity: active >= 1 ? 1 : 0.1,
             transition: "all 700ms cubic-bezier(0.16,1,0.3,1)",
-            width: "260px",
+            width: isMobile ? "200px" : "260px",
           }}
         >
           <div
-            className="overflow-hidden rounded-xl p-3"
+            className="overflow-hidden rounded-xl p-2 md:p-3"
             style={{
               background: "var(--foreground)",
               border: `1px solid ${BLUE_MID}`,
@@ -453,18 +493,18 @@ function BuildVisual({
             }}
           >
             <div
-              className="font-mono text-[9px] uppercase tracking-[0.22em]"
+              className="font-mono text-[8px] uppercase tracking-[0.22em] md:text-[9px]"
               style={{ color: "var(--background)", opacity: 0.5 }}
             >
               Operational graph
             </div>
             <div
-              className="mt-1 font-mono text-[14px] leading-tight tracking-tight"
+              className="mt-1 font-mono text-[11px] leading-tight tracking-tight md:text-[14px]"
               style={{ color: "var(--background)" }}
             >
               ticket → shift → unit → brand
             </div>
-            <div className="mt-2 grid grid-cols-8 gap-1">
+            <div className="mt-1.5 grid grid-cols-8 gap-0.5 md:mt-2 md:gap-1">
               {Array.from({ length: 16 }).map((_, i) => {
                 const filled =
                   active >= 1 &&
@@ -474,7 +514,7 @@ function BuildVisual({
                 return (
                   <div
                     key={i}
-                    className="h-1.5 rounded-sm transition-all duration-300"
+                    className="h-1 rounded-sm transition-all duration-300 md:h-1.5"
                     style={{
                       background: filled ? BLUE : "var(--background)",
                       opacity: filled ? 1 : 0.12,
@@ -486,7 +526,7 @@ function BuildVisual({
             </div>
             {active >= 2 && (
               <div
-                className="mt-2 flex items-center justify-between font-mono text-[10px]"
+                className="mt-1.5 flex items-center justify-between font-mono text-[8px] md:mt-2 md:text-[10px]"
                 style={{ color: "var(--background)", opacity: 0.55 }}
               >
                 <span>records matched</span>
@@ -505,9 +545,16 @@ function BuildVisual({
         </div>
 
         {/* ── LAYER 3: Anomaly tiles (Detect) ── */}
-        <div style={{ position: "absolute", bottom: 56, left: 16, right: 16 }}>
+        <div
+          style={{
+            position: "absolute",
+            bottom: isMobile ? 48 : 56,
+            left: isMobile ? 12 : 16,
+            right: isMobile ? 12 : 16,
+          }}
+        >
           <div
-            className="mb-1.5 font-mono text-[9px] uppercase tracking-wider"
+            className="mb-1 font-mono text-[8px] uppercase tracking-wider md:mb-1.5 md:text-[9px]"
             style={{
               color: BLUE,
               opacity: active >= 2 ? 0.7 : 0,
@@ -516,14 +563,14 @@ function BuildVisual({
           >
             § Detected anomalies
           </div>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-1.5 md:grid-cols-4 md:gap-2">
             {ANOMALIES.map((a, i) => {
               const visible = active >= 2;
               const c = SEV_COLOR[a.severity];
               return (
                 <div
                   key={a.l}
-                  className="rounded-lg p-2"
+                  className="rounded-lg p-1.5 md:p-2"
                   style={{
                     background: `oklch(0.12 0.01 245)`,
                     border: `1px solid ${visible ? `${c}44` : BLUE_DIM}`,
@@ -534,11 +581,11 @@ function BuildVisual({
                     }ms, border-color 300ms`,
                   }}
                 >
-                  <div className="text-[10px] font-medium leading-tight">
+                  <div className="text-[9px] font-medium leading-tight md:text-[10px]">
                     {a.l}
                   </div>
                   <div
-                    className="mt-1 font-mono text-[8px]"
+                    className="mt-0.5 font-mono text-[7px] md:mt-1 md:text-[8px]"
                     style={{ color: c }}
                   >
                     ● {a.v}
@@ -553,16 +600,16 @@ function BuildVisual({
         <div
           style={{
             position: "absolute",
-            bottom: 12,
-            left: 16,
-            right: 16,
+            bottom: isMobile ? 8 : 12,
+            left: isMobile ? 12 : 16,
+            right: isMobile ? 12 : 16,
             opacity: active >= 3 ? 1 : 0,
             transform: active >= 3 ? "translateY(0)" : "translateY(14px)",
             transition: "opacity 600ms, transform 600ms",
           }}
         >
           <div
-            className="flex items-center justify-between rounded-xl px-3 py-2"
+            className="flex flex-col items-start justify-between gap-2 rounded-xl px-2 py-1.5 md:flex-row md:items-center md:gap-0 md:px-3 md:py-2"
             style={{
               background: "var(--foreground)",
               border: `1px solid ${BLUE_MID}`,
@@ -571,21 +618,21 @@ function BuildVisual({
           >
             <div>
               <div
-                className="font-mono text-[8px] uppercase tracking-[0.22em]"
+                className="font-mono text-[7px] uppercase tracking-[0.22em] md:text-[8px]"
                 style={{ color: "var(--background)", opacity: 0.5 }}
               >
                 Decision routed
               </div>
               <div
-                className="mt-0.5 text-[11px] font-medium"
+                className="mt-0.5 text-[9px] font-medium md:mt-0.5 md:text-[11px]"
                 style={{ color: "var(--background)" }}
               >
                 Rebalance shift · Store #0307 · saves $684
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <span
-                className="rounded-md px-2 py-0.5 font-mono text-[9px]"
+                className="rounded-md px-1.5 py-0.5 font-mono text-[8px] md:px-2 md:py-0.5 md:text-[9px]"
                 style={{
                   background: BLUE,
                   color: "#fff",
@@ -598,7 +645,7 @@ function BuildVisual({
                 style={{
                   color: "var(--background)",
                   opacity: 0.4,
-                  fontSize: 11,
+                  fontSize: isMobile ? 9 : 11,
                 }}
               >
                 →
