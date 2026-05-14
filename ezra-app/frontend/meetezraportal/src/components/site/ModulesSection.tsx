@@ -33,7 +33,7 @@ const MODULES = [
   },
   {
     id: "inventory",
-    name: "Inventory",
+    name: "Ezra Inventory",
     tag: "02",
     summary:
       "Theoretical-vs-actual variance, dynamic pars, and spoilage forecasting.",
