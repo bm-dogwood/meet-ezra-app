@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+plans/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Keys and secrets
+*.pem
+*.key
+firebase-service-account.json
+secrets.txt
+gcp-sa-key.json
+
+# Docker
+*.tar
+
+# Python
+*.egg-info/
+.eggs/
+pip-log.txt
+
+# Testing
+coverage/
+.coverage
+htmlcov/
+
+agent_history
+docs
+imgs
+JSON_Files
+scripts

@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ezra
+      POSTGRES_PASSWORD: ezra_secret
+      POSTGRES_DB: ezra_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezra -d ezra_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    env_file:
+      - ./backend/.env
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - DATABASE_URL=postgres://ezra:ezra_secret@postgres:5432/ezra_db
+      - INGESTION_API_KEY=ezra-bot-ingestion-key-2025-secure
+      - EMAIL_HOST_USER=Reports@meetezra.bot
+      - EMAIL_HOST_PASSWORD=xuvu kiou xbrw dntx
+      # Twilio SMS - set these in backend/.env or uncomment and fill in here
+      # - TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+      # - TWILIO_AUTH_TOKEN=your_auth_token_here
+      # - TWILIO_FROM_NUMBER=+15551234567
+      # - TWILIO_MESSAGING_SERVICE_SID=
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build: 
+      context: ./frontend/meetezraportal
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8000
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "5177:5177"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: meetezraportal-cert
+  namespace: dev-ezrabot
+spec:
+  secretName: meetezraportal-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - dev-meetezra.hachiai.com
+  - www.dev-meetezra.hachiai.com
+

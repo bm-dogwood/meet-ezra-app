@@ -1,0 +1,139 @@
+# =============================================================================
+# Kubernetes CronJob Template for Report Scheduling
+# =============================================================================
+#
+# This manifest runs the Django management command `send_scheduled_reports`
+# on a recurring schedule. Each distinct schedule time/timezone combination
+# needs its own CronJob. The command queries all active ReportSchedule records
+# matching the given --time and --timezone, generates the reports, and emails
+# them to the configured recipients.
+#
+# HOW TO CREATE ADDITIONAL CRONJOBS:
+# ----------------------------------
+# 1. Copy this entire manifest (or the CronJob resource below).
+# 2. Update the following fields:
+#    - metadata.name  → a unique name, e.g. "report-schedule-0900-newyork"
+#    - spec.schedule  → the cron expression in UTC
+#    - command args   → --time and --timezone to match the desired local time
+#
+# EXAMPLES OF ADDITIONAL CRONJOBS:
+#
+#   9:00 AM EST (America/New_York) = 14:00 UTC
+#     name: report-schedule-0900-newyork
+#     schedule: "0 14 * * *"
+#     command: [..., "--time", "09:00", "--timezone", "America/New_York"]
+#
+#   6:00 AM PST (America/Los_Angeles) = 14:00 UTC
+#     name: report-schedule-0600-losangeles
+#     schedule: "0 14 * * *"
+#     command: [..., "--time", "06:00", "--timezone", "America/Los_Angeles"]
+#
+#   10:00 PM PDT (America/Los_Angeles) = 05:00 UTC next day
+#     name: report-schedule-2200-losangeles
+#     schedule: "0 5 * * *"
+#     command: [..., "--time", "22:00", "--timezone", "America/Los_Angeles"]
+#
+#   8:00 AM GMT (Europe/London) = 08:00 UTC
+#     name: report-schedule-0800-london
+#     schedule: "0 8 * * *"
+#     command: [..., "--time", "08:00", "--timezone", "Europe/London"]
+#
+# NOTE ON DAYLIGHT SAVING TIME:
+# The cron schedule is in UTC. If the target timezone observes DST, you may
+# need to adjust the UTC cron time seasonally, or create two CronJobs
+# (one for standard time, one for daylight time) and enable/disable them
+# as needed. Alternatively, you can set the schedule to run at both possible
+# UTC times and let the management command handle deduplication.
+# =============================================================================
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: report-schedule-0800-chicago
+  namespace: ezrabot
+  labels:
+    app: backend
+    component: report-scheduler
+spec:
+  # 8:00 AM CST (America/Chicago) = 14:00 UTC
+  # Adjust this cron expression when converting local time to UTC.
+  # Format: minute hour day-of-month month day-of-week
+  schedule: "0 14 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      activeDeadlineSeconds: 600  # 10 minute timeout per job
+      template:
+        metadata:
+          labels:
+            app: backend
+            component: report-scheduler
+        spec:
+          containers:
+          - name: send-reports
+            image: us-east1-docker.pkg.dev/ezrabot-481216/ezrabot-repo/ezra-backend:latest
+            imagePullPolicy: Always
+            command:
+              - "python"
+              - "manage.py"
+              - "send_scheduled_reports"
+              - "--time"
+              - "08:00"          # Local time in HH:MM format
+              - "--timezone"
+              - "America/Chicago" # IANA timezone string
+            env:
+            # --- Plain-value env vars (same as backend deployment) ---
+            - name: DEBUG
+              value: "False"
+            - name: EZRA_ENV
+              value: "prod"
+            - name: EMAIL_HOST
+              value: "smtp.gmail.com"
+            - name: EMAIL_PORT
+              value: "587"
+            - name: ADMIN_URL
+              value: "https://api.meetezra.bot/admin"
+            - name: FRONTEND_URL
+              value: "https://meetezra.bot/login"
+            # --- Secret-backed env vars (same as backend deployment) ---
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SECRET_KEY
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: DATABASE_URL
+            - name: INGESTION_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: INGESTION_API_KEY
+            - name: EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: EMAIL_HOST_USER
+            - name: EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: EMAIL_HOST_PASSWORD
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: EMAIL_HOST_USER
+            resources:
+              requests:
+                cpu: 250m
+                memory: 512Mi
+              limits:
+                cpu: 1000m
+                memory: 1Gi
+          restartPolicy: OnFailure
