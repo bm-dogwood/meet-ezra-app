@@ -1,11 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "./SectionHeader";
 
-// ─── Blue accent tokens ────────────────────────────────────────────────────
-const BLUE = "oklch(0.58 0.22 245)";
-const BLUE_DIM = "oklch(0.58 0.22 245 / 0.18)";
-const BLUE_MID = "oklch(0.58 0.22 245 / 0.45)";
-const BLUE_GLOW = "0 0 24px oklch(0.58 0.22 245 / 0.35)";
+// ── Ezra V2 brand tokens ──────────────────────────────────────────────────
+// Colors: Brand Reference May 2026
+// Typography: DM Sans 300/400/500/600, DM Mono 400
+const PAGE_BG = "#09090B";
+const CARD_BG = "#141417";
+const CARD_EL = "#18181B";
+
+// Cyan scale — primary accent
+const CYAN = "#06B6D4"; // Cyan 500
+const CYAN_LIGHT = "#22D3EE"; // Cyan 400
+const CYAN_PALE = "rgba(6,182,212,0.10)";
+const CYAN_BORDER = "rgba(6,182,212,0.28)";
+const CYAN_MID = "rgba(6,182,212,0.45)";
+
+const TEXT = "rgba(255,255,255,0.92)";
+const TEXT_DIM = "rgba(255,255,255,0.55)";
+const TEXT_MUTED = "rgba(255,255,255,0.30)";
+const BORDER = "rgba(255,255,255,0.07)";
 
 const STEPS = [
   {
@@ -45,9 +58,7 @@ export function BuildingSection() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -79,29 +90,54 @@ export function BuildingSection() {
 
   return (
     <section
+      id="how-it-works"
       ref={sectionRef}
       className="relative"
       style={{
         height: `${STEPS.length * 100}vh`,
-        background: "var(--background)",
+        background: PAGE_BG,
       }}
     >
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        {/* Simplified background - just a subtle single gradient */}
+        {/* Subtle ambient — restrained, not a blob */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
-            background: `radial-gradient(ellipse at 80% 50%, oklch(0.55 0.18 245 / 0.08), transparent 60%)`,
+            background: `radial-gradient(ellipse at 80% 50%, rgba(6,182,212,0.06), transparent 60%)`,
           }}
         />
 
         <div className="relative mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-6 px-4 md:gap-8 lg:grid-cols-12 lg:gap-12 lg:px-10">
           {/* LEFT: steps */}
           <div className="lg:col-span-5">
-            <SectionHeader
-              eyebrow="How it works"
-              title="Watch the operational layer assemble itself."
-            />
+            {/* Eyebrow — DM Mono */}
+            <div
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "10px",
+                textTransform: "uppercase",
+                letterSpacing: "0.22em",
+                color: CYAN,
+                marginBottom: "16px",
+              }}
+            >
+              How it works
+            </div>
+
+            {/* Section heading — DM Sans 300 Light */}
+            <h2
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontWeight: 300,
+                fontSize: "clamp(32px, 4vw, 56px)",
+                lineHeight: 1.05,
+                letterSpacing: "-0.035em",
+                color: TEXT,
+                marginBottom: "24px",
+              }}
+            >
+              Watch the operational layer assemble itself.
+            </h2>
 
             <ol className="mt-6 space-y-2 md:mt-8 md:space-y-1">
               {STEPS.map((s, i) => {
@@ -112,36 +148,33 @@ export function BuildingSection() {
                     key={s.n}
                     className="relative flex gap-3 rounded-xl px-3 py-3 transition-all duration-500 md:gap-4"
                     style={{
-                      background: isActive ? BLUE_DIM : "transparent",
+                      background: isActive ? CYAN_PALE : "transparent",
                       border: `1px solid ${
-                        isActive ? BLUE_MID : "transparent"
+                        isActive ? CYAN_BORDER : "transparent"
                       }`,
-                      boxShadow: isActive ? BLUE_GLOW : "none",
                       opacity: isActive ? 1 : isDone ? 0.65 : 0.35,
                     }}
                   >
                     {/* Step indicator */}
                     <div className="flex w-6 flex-col items-center pt-1">
                       <span
-                        className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-mono transition-all duration-500 md:h-5 md:w-5"
+                        className="flex h-5 w-5 items-center justify-center rounded-full transition-all duration-500"
                         style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: "9px",
                           background: isActive
-                            ? BLUE
+                            ? CYAN
                             : isDone
-                            ? "var(--foreground)"
+                            ? TEXT
                             : "transparent",
                           border: `1px solid ${
                             isActive
-                              ? BLUE
+                              ? CYAN
                               : isDone
-                              ? "var(--foreground)"
-                              : "var(--border-strong)"
+                              ? TEXT
+                              : "rgba(255,255,255,0.25)"
                           }`,
-                          color:
-                            isActive || isDone
-                              ? "var(--background)"
-                              : "var(--muted-foreground)",
-                          boxShadow: isActive ? BLUE_GLOW : "none",
+                          color: isActive || isDone ? PAGE_BG : TEXT_MUTED,
                         }}
                       >
                         {isDone ? "✓" : s.n}
@@ -150,7 +183,7 @@ export function BuildingSection() {
                         <span
                           className="mt-1 w-px flex-1 transition-all duration-700"
                           style={{
-                            background: isDone ? BLUE : "var(--border)",
+                            background: isDone ? CYAN : BORDER,
                           }}
                         />
                       )}
@@ -158,30 +191,54 @@ export function BuildingSection() {
 
                     <div className="flex-1 pb-2 md:pb-3">
                       <div className="flex flex-col items-start justify-between gap-1 md:flex-row md:items-center md:gap-0">
+                        {/* Step label — DM Mono */}
                         <span
-                          className="font-mono text-[9px] uppercase tracking-[0.22em] md:text-[10px]"
                           style={{
-                            color: isActive ? BLUE : "var(--muted-foreground)",
+                            fontFamily: "'DM Mono', monospace",
+                            fontSize: "10px",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.22em",
+                            color: isActive ? CYAN : TEXT_MUTED,
                           }}
                         >
                           {s.label}
                         </span>
                         {isActive && (
                           <span
-                            className="rounded-full px-1.5 py-0.5 font-mono text-[8px] uppercase tracking-wider md:px-2 md:text-[9px]"
                             style={{
-                              background: BLUE_DIM,
-                              color: BLUE,
-                              border: `1px solid ${BLUE_MID}`,
+                              fontFamily: "'DM Mono', monospace",
+                              fontSize: "9px",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.14em",
+                              background: CYAN_PALE,
+                              color: CYAN,
+                              border: `1px solid ${CYAN_BORDER}`,
+                              borderRadius: "9999px",
+                              padding: "2px 8px",
                             }}
                           >
                             {s.chip}
                           </span>
                         )}
                       </div>
-                      <h4 className="mt-2 text-[14px] font-medium leading-snug tracking-tight md:text-[15px]">
+
+                      {/* Step title — DM Sans Medium */}
+                      <h4
+                        className="mt-2"
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontWeight: 500,
+                          fontSize: "15px",
+                          lineHeight: 1.3,
+                          letterSpacing: "-0.01em",
+                          color: TEXT,
+                          margin: "8px 0 0",
+                        }}
+                      >
                         {s.title}
                       </h4>
+
+                      {/* Step body — DM Sans Regular, animated reveal */}
                       <div
                         style={{
                           maxHeight: isActive ? "100px" : "0",
@@ -190,7 +247,16 @@ export function BuildingSection() {
                             "max-height 500ms cubic-bezier(0.16,1,0.3,1)",
                         }}
                       >
-                        <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground md:text-[13px]">
+                        <p
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontWeight: 400,
+                            fontSize: "13px",
+                            lineHeight: 1.55,
+                            color: TEXT_DIM,
+                            marginTop: "8px",
+                          }}
+                        >
                           {s.body}
                         </p>
                       </div>
@@ -201,7 +267,7 @@ export function BuildingSection() {
             </ol>
           </div>
 
-          {/* RIGHT: pipeline visual - responsive */}
+          {/* RIGHT: pipeline visual */}
           <div className="lg:col-span-6 lg:col-start-7">
             <BuildVisual
               active={active}
@@ -211,17 +277,16 @@ export function BuildingSection() {
           </div>
         </div>
 
-        {/* Bottom progress bar */}
+        {/* Progress bar — bottom, cyan */}
         <div
           className="absolute bottom-0 left-0 right-0 h-px"
-          style={{ background: "var(--border)" }}
+          style={{ background: BORDER }}
         >
           <div
             className="h-full transition-[width] duration-200"
             style={{
               width: `${progress * 100}%`,
-              background: `linear-gradient(to right, ${BLUE}, oklch(0.72 0.18 245))`,
-              boxShadow: `0 0 8px ${BLUE}`,
+              background: `linear-gradient(to right, ${CYAN}, ${CYAN_LIGHT})`,
             }}
           />
         </div>
@@ -230,7 +295,7 @@ export function BuildingSection() {
   );
 }
 
-// ─── Build Visual with responsive behavior ──────────────────────────────────────────
+// ── Build Visual ─────────────────────────────────────────────────────────────
 
 const SOURCES = ["Toast", "Square", "Aloha", "Revel", "Lightspeed", "Clover"];
 const ANOMALIES = [
@@ -240,10 +305,11 @@ const ANOMALIES = [
   { l: "Vendor drift", severity: "low", v: "Low" },
 ];
 
+// Severity colors — module accents, functional not decorative
 const SEV_COLOR: Record<string, string> = {
-  high: "oklch(0.65 0.2 25)",
-  med: "oklch(0.72 0.18 75)",
-  low: BLUE,
+  high: "#F87171", // red-ish — danger
+  med: "#FBBF24", // amber — warning
+  low: "#06B6D4", // cyan — informational
 };
 
 function BuildVisual({
@@ -262,22 +328,30 @@ function BuildVisual({
       className="relative w-full overflow-hidden rounded-2xl"
       style={{
         height: isMobile ? "380px" : "440px",
-        background: "var(--background)",
-        border: `1px solid ${BLUE_MID}`,
-        boxShadow: `0 0 0 1px oklch(0.58 0.22 245 / 0.08), 0 40px 100px -20px oklch(0.58 0.22 245 / 0.15)`,
+        background: PAGE_BG,
+        border: `1px solid ${CYAN_BORDER}`,
+        // No drop shadow — brand principle 03
       }}
     >
       {/* Chrome header */}
       <div
         className="flex items-center justify-between px-3 py-2 md:px-5 md:py-2.5"
-        style={{ borderBottom: `1px solid ${BLUE_DIM}` }}
+        style={{ borderBottom: `1px solid ${CYAN_PALE}` }}
       >
         <div className="flex items-center gap-1.5 md:gap-2">
           <span
             className="inline-block h-1.5 w-1.5 rounded-full"
-            style={{ background: BLUE, boxShadow: BLUE_GLOW }}
+            style={{ background: CYAN }}
           />
-          <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-muted-foreground md:text-[10px]">
+          <span
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: isMobile ? "8px" : "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.22em",
+              color: TEXT_MUTED,
+            }}
+          >
             ezra · build pipeline
           </span>
         </div>
@@ -295,12 +369,19 @@ function BuildVisual({
                     : isMobile
                     ? "4px"
                     : "6px",
-                background: i <= active ? BLUE : "var(--border-strong)",
+                background: i <= active ? CYAN : "rgba(255,255,255,0.18)",
                 opacity: i <= active ? 1 : 0.4,
               }}
             />
           ))}
-          <span className="ml-0.5 font-mono text-[8px] text-muted-foreground md:ml-1 md:text-[10px]">
+          <span
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: isMobile ? "8px" : "10px",
+              color: TEXT_MUTED,
+              marginLeft: "2px",
+            }}
+          >
             {active + 1}/{STEPS.length}
           </span>
         </div>
@@ -313,7 +394,7 @@ function BuildVisual({
           padding: isMobile ? "12px" : "16px",
         }}
       >
-        {/* ── LAYER 1: Source tiles ── */}
+        {/* LAYER 1: Source tiles */}
         <div
           style={{
             position: "absolute",
@@ -323,8 +404,15 @@ function BuildVisual({
           }}
         >
           <div
-            className="mb-1 font-mono text-[8px] uppercase tracking-wider md:mb-1.5 md:text-[9px]"
-            style={{ color: BLUE, opacity: 0.7 }}
+            style={{
+              fontFamily: "'DM Mono', monospace",
+              fontSize: isMobile ? "8px" : "9px",
+              textTransform: "uppercase",
+              letterSpacing: "0.18em",
+              color: CYAN,
+              opacity: 0.7,
+              marginBottom: isMobile ? "4px" : "6px",
+            }}
           >
             § POS Sources
           </div>
@@ -337,8 +425,8 @@ function BuildVisual({
                   key={s}
                   className="rounded-lg px-2 py-1 md:px-3 md:py-1.5"
                   style={{
-                    background: `oklch(0.12 0.01 245)`,
-                    border: `1px solid ${BLUE_DIM}`,
+                    background: CARD_BG,
+                    border: `1px solid ${CYAN_PALE}`,
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(10px)",
                     transition: `opacity 500ms ${i * 55}ms, transform 500ms ${
@@ -347,14 +435,23 @@ function BuildVisual({
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-medium md:text-[11px]">
+                    {/* Source name — DM Sans */}
+                    <span
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 500,
+                        fontSize: isMobile ? "9px" : "11px",
+                        color: TEXT,
+                      }}
+                    >
                       {s}
                     </span>
                     <span
-                      className="h-1 w-1 rounded-full md:h-1.5 md:w-1.5"
+                      className="rounded-full"
                       style={{
-                        background: BLUE,
-                        boxShadow: `0 0 6px ${BLUE}`,
+                        width: isMobile ? "4px" : "6px",
+                        height: isMobile ? "4px" : "6px",
+                        background: CYAN,
                         animation: "pulse 1.8s ease-in-out infinite",
                         animationDelay: `${i * 200}ms`,
                       }}
@@ -362,13 +459,13 @@ function BuildVisual({
                   </div>
                   <div
                     className="mt-1 h-0.5 w-full overflow-hidden rounded-full md:mt-1.5"
-                    style={{ background: BLUE_DIM }}
+                    style={{ background: CYAN_PALE }}
                   >
                     <div
                       className="h-full rounded-full"
                       style={{
                         width: `${barW}%`,
-                        background: `linear-gradient(to right, ${BLUE}, oklch(0.72 0.18 245))`,
+                        background: `linear-gradient(to right, ${CYAN}, ${CYAN_LIGHT})`,
                         transition: "width 900ms ease-out",
                       }}
                     />
@@ -379,7 +476,7 @@ function BuildVisual({
           </div>
         </div>
 
-        {/* ── SVG connector lines (responsive adjustments) ── */}
+        {/* SVG connector lines */}
         <svg
           viewBox={isMobile ? "0 0 280 360" : "0 0 560 420"}
           preserveAspectRatio="none"
@@ -392,20 +489,12 @@ function BuildVisual({
           }}
         >
           <defs>
-            <linearGradient id="bg-blue" x1="0" x2="0" y1="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor="oklch(0.58 0.22 245)"
-                stopOpacity="0.5"
-              />
-              <stop
-                offset="100%"
-                stopColor="oklch(0.58 0.22 245)"
-                stopOpacity="0.05"
-              />
+            <linearGradient id="bg-cyan" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={CYAN} stopOpacity="0.45" />
+              <stop offset="100%" stopColor={CYAN} stopOpacity="0.04" />
             </linearGradient>
             <filter id="glow">
-              <feGaussianBlur stdDeviation="2" result="blur" />
+              <feGaussianBlur stdDeviation="1.5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -426,7 +515,7 @@ function BuildVisual({
                 y1={y1}
                 x2={x2}
                 y2={y2}
-                stroke="url(#bg-blue)"
+                stroke="url(#bg-cyan)"
                 strokeWidth="1.5"
                 strokeDasharray={len}
                 strokeDashoffset={(1 - drawn) * len}
@@ -450,10 +539,10 @@ function BuildVisual({
                   y1={y1}
                   x2={x2}
                   y2={y2}
-                  stroke="oklch(0.58 0.22 245)"
+                  stroke={CYAN}
                   strokeWidth="1"
                   strokeDasharray="4 4"
-                  opacity="0.5"
+                  opacity="0.45"
                   filter="url(#glow)"
                 />
               );
@@ -464,15 +553,15 @@ function BuildVisual({
               y1={isMobile ? 320 : 380}
               x2={isMobile ? 140 : 280}
               y2={isMobile ? 340 : 400}
-              stroke="oklch(0.58 0.22 245)"
+              stroke={CYAN}
               strokeWidth="2"
-              opacity="0.8"
+              opacity="0.75"
               filter="url(#glow)"
             />
           )}
         </svg>
 
-        {/* ── LAYER 2: Operational graph (Normalize) ── */}
+        {/* LAYER 2: Operational graph (Normalize) */}
         <div
           style={{
             position: "absolute",
@@ -487,20 +576,31 @@ function BuildVisual({
           <div
             className="overflow-hidden rounded-xl p-2 md:p-3"
             style={{
-              background: "var(--foreground)",
-              border: `1px solid ${BLUE_MID}`,
-              boxShadow: `0 30px 80px -20px rgba(0,0,0,0.6), ${BLUE_GLOW}`,
+              background: TEXT, // uses light surface for graph node — brand contrast
+              border: `1px solid ${CYAN_BORDER}`,
             }}
           >
             <div
-              className="font-mono text-[8px] uppercase tracking-[0.22em] md:text-[9px]"
-              style={{ color: "var(--background)", opacity: 0.5 }}
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: isMobile ? "8px" : "9px",
+                textTransform: "uppercase",
+                letterSpacing: "0.20em",
+                color: PAGE_BG,
+                opacity: 0.5,
+                marginBottom: "4px",
+              }}
             >
               Operational graph
             </div>
             <div
-              className="mt-1 font-mono text-[11px] leading-tight tracking-tight md:text-[14px]"
-              style={{ color: "var(--background)" }}
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: isMobile ? "11px" : "14px",
+                lineHeight: 1.2,
+                letterSpacing: "-0.01em",
+                color: PAGE_BG,
+              }}
             >
               ticket → shift → unit → brand
             </div>
@@ -516,9 +616,8 @@ function BuildVisual({
                     key={i}
                     className="h-1 rounded-sm transition-all duration-300 md:h-1.5"
                     style={{
-                      background: filled ? BLUE : "var(--background)",
+                      background: filled ? CYAN : PAGE_BG,
                       opacity: filled ? 1 : 0.12,
-                      boxShadow: filled ? BLUE_GLOW : "none",
                     }}
                   />
                 );
@@ -526,13 +625,18 @@ function BuildVisual({
             </div>
             {active >= 2 && (
               <div
-                className="mt-1.5 flex items-center justify-between font-mono text-[8px] md:mt-2 md:text-[10px]"
-                style={{ color: "var(--background)", opacity: 0.55 }}
+                className="mt-1.5 flex items-center justify-between md:mt-2"
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: isMobile ? "8px" : "10px",
+                  color: PAGE_BG,
+                  opacity: 0.55,
+                }}
               >
                 <span>records matched</span>
                 <span
                   style={{
-                    color: BLUE,
+                    color: CYAN,
                     opacity: 1,
                     fontVariantNumeric: "tabular-nums",
                   }}
@@ -544,7 +648,7 @@ function BuildVisual({
           </div>
         </div>
 
-        {/* ── LAYER 3: Anomaly tiles (Detect) ── */}
+        {/* LAYER 3: Anomaly tiles (Detect) */}
         <div
           style={{
             position: "absolute",
@@ -554,11 +658,15 @@ function BuildVisual({
           }}
         >
           <div
-            className="mb-1 font-mono text-[8px] uppercase tracking-wider md:mb-1.5 md:text-[9px]"
             style={{
-              color: BLUE,
+              fontFamily: "'DM Mono', monospace",
+              fontSize: isMobile ? "8px" : "9px",
+              textTransform: "uppercase",
+              letterSpacing: "0.18em",
+              color: CYAN,
               opacity: active >= 2 ? 0.7 : 0,
               transition: "opacity 500ms",
+              marginBottom: isMobile ? "4px" : "6px",
             }}
           >
             § Detected anomalies
@@ -572,21 +680,35 @@ function BuildVisual({
                   key={a.l}
                   className="rounded-lg p-1.5 md:p-2"
                   style={{
-                    background: `oklch(0.12 0.01 245)`,
-                    border: `1px solid ${visible ? `${c}44` : BLUE_DIM}`,
+                    background: CARD_BG,
+                    border: `1px solid ${visible ? `${c}44` : CYAN_PALE}`,
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(10px)",
                     transition: `opacity 450ms ${i * 80}ms, transform 450ms ${
                       i * 80
-                    }ms, border-color 300ms`,
+                    }ms`,
                   }}
                 >
-                  <div className="text-[9px] font-medium leading-tight md:text-[10px]">
+                  {/* Label — DM Sans */}
+                  <div
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontWeight: 500,
+                      fontSize: isMobile ? "9px" : "10px",
+                      lineHeight: 1.3,
+                      color: TEXT,
+                    }}
+                  >
                     {a.l}
                   </div>
+                  {/* Severity — DM Mono */}
                   <div
-                    className="mt-0.5 font-mono text-[7px] md:mt-1 md:text-[8px]"
-                    style={{ color: c }}
+                    style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: isMobile ? "7px" : "8px",
+                      marginTop: isMobile ? "2px" : "4px",
+                      color: c,
+                    }}
                   >
                     ● {a.v}
                   </div>
@@ -596,7 +718,7 @@ function BuildVisual({
           </div>
         </div>
 
-        {/* ── LAYER 4: Decision pill (Act) ── */}
+        {/* LAYER 4: Decision pill (Act) */}
         <div
           style={{
             position: "absolute",
@@ -611,39 +733,55 @@ function BuildVisual({
           <div
             className="flex flex-col items-start justify-between gap-2 rounded-xl px-2 py-1.5 md:flex-row md:items-center md:gap-0 md:px-3 md:py-2"
             style={{
-              background: "var(--foreground)",
-              border: `1px solid ${BLUE_MID}`,
-              boxShadow: BLUE_GLOW,
+              background: TEXT, // light surface for the decision pill — contrast
+              border: `1px solid ${CYAN_BORDER}`,
             }}
           >
             <div>
               <div
-                className="font-mono text-[7px] uppercase tracking-[0.22em] md:text-[8px]"
-                style={{ color: "var(--background)", opacity: 0.5 }}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: isMobile ? "7px" : "8px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.20em",
+                  color: PAGE_BG,
+                  opacity: 0.5,
+                }}
               >
                 Decision routed
               </div>
+              {/* Decision text — DM Sans Medium */}
               <div
-                className="mt-0.5 text-[9px] font-medium md:mt-0.5 md:text-[11px]"
-                style={{ color: "var(--background)" }}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 500,
+                  fontSize: isMobile ? "9px" : "11px",
+                  color: PAGE_BG,
+                  marginTop: "2px",
+                }}
               >
                 Rebalance shift · Store #0307 · saves $684
               </div>
             </div>
             <div className="flex items-center gap-1.5 md:gap-2">
+              {/* Badge — Cyan 500 fill, dark text */}
               <span
-                className="rounded-md px-1.5 py-0.5 font-mono text-[8px] md:px-2 md:py-0.5 md:text-[9px]"
                 style={{
-                  background: BLUE,
-                  color: "#fff",
-                  boxShadow: BLUE_GLOW,
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: isMobile ? "8px" : "9px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  background: CYAN,
+                  color: PAGE_BG,
+                  borderRadius: "6px",
+                  padding: isMobile ? "2px 6px" : "2px 8px",
                 }}
               >
                 auto-fixed
               </span>
               <span
                 style={{
-                  color: "var(--background)",
+                  color: PAGE_BG,
                   opacity: 0.4,
                   fontSize: isMobile ? 9 : 11,
                 }}

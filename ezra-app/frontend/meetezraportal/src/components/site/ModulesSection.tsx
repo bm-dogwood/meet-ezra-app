@@ -1,27 +1,35 @@
 import { useState } from "react";
 import { SectionHeader } from "./SectionHeader";
 
-// ── Explicit palette — no CSS vars that can silently fail ──────────────────
-const BG = "#000";
-const SURFACE = "#111318";
-const SURFACE_EL = "#161920";
+// ── Ezra V2 brand tokens ──────────────────────────────────────────────────
+// Colors: Brand Reference May 2026
+// Typography: DM Sans 300/400/500/600, DM Mono 400 — Google Fonts
+const PAGE_BG = "#09090B"; // dark page background
+const CARD_BG = "#141417"; // dark card surface
+const CARD_EL = "#18181B"; // elevated element on card
 const BORDER = "rgba(255,255,255,0.07)";
 const BORDER_STR = "rgba(255,255,255,0.13)";
-const TEXT = "rgba(255,255,255,0.90)";
-const TEXT_DIM = "rgba(255,255,255,0.60)";
-const TEXT_MUTED = "rgba(255,255,255,0.38)";
+const TEXT = "rgba(255,255,255,0.92)";
+const TEXT_DIM = "rgba(255,255,255,0.55)";
+const TEXT_MUTED = "rgba(255,255,255,0.30)";
 
-// ── Blue tokens ───────────────────────────────────────────────────────────
-const BLUE = "oklch(0.58 0.22 245)";
-const BLUE_DIM = "oklch(0.58 0.22 245 / 0.14)";
-const BLUE_MID = "oklch(0.58 0.22 245 / 0.38)";
-const BLUE_GLOW = "0 0 20px oklch(0.58 0.22 245 / 0.35)";
+// Cyan accent — Cyan 500 primary / Cyan 400 hover
+const CYAN = "#06B6D4";
+const CYAN_LIGHT = "#22D3EE";
+const CYAN_PALE = "rgba(6,182,212,0.10)";
+const CYAN_BORDER = "rgba(6,182,212,0.28)";
 
+// Module accents — functional, one per component (brand principle: never mix)
+// LP & Inventory = Indigo #6366F1
+// Scheduling = Emerald #34D399
+// Exponential = Orange #FB923C
+// Sales = Cyan (same as primary brand)
 const MODULES = [
   {
     id: "loss",
     name: "Ezra Loss Prevention",
     tag: "01",
+    accent: "#6366F1", // LP & Inventory — indigo
     summary:
       "Anomaly detection across every void, comp, refund and after-hours transaction.",
     bullets: [
@@ -35,6 +43,7 @@ const MODULES = [
     id: "inventory",
     name: "Ezra Inventory",
     tag: "02",
+    accent: "#6366F1", // LP & Inventory — indigo
     summary:
       "Theoretical-vs-actual variance, dynamic pars, and spoilage forecasting.",
     bullets: [
@@ -48,6 +57,7 @@ const MODULES = [
     id: "scheduling",
     name: "Ezra Scheduling",
     tag: "03",
+    accent: "#34D399", // Scheduling — emerald green
     summary:
       "Demand-aware schedules built from POS signal, weather, and event calendars.",
     bullets: [
@@ -61,6 +71,7 @@ const MODULES = [
     id: "exp",
     name: "Ezra Exponential",
     tag: "04",
+    accent: "#FB923C", // Exponential / CRM — warm orange
     summary:
       "Guest CRM and retention — turn one-time tickets into measurable lifetime value.",
     bullets: [
@@ -74,6 +85,7 @@ const MODULES = [
     id: "sales",
     name: "Ezra Sales",
     tag: "05",
+    accent: CYAN, // Sales — same cyan as primary brand
     summary:
       "Revenue intelligence — daypart, mix, menu engineering, and unit benchmarking.",
     bullets: [
@@ -88,18 +100,21 @@ const MODULES = [
 export function ModulesSection() {
   const [active, setActive] = useState(MODULES[0].id);
   const current = MODULES.find((m) => m.id === active)!;
+  const A = current.accent; // active module's accent — one color per component
+  const A_PALE = `${A}1A`; // ~10% opacity
+  const A_BORDER = `${A}48`; // ~28% opacity
 
   return (
     <section
       id="modules"
       className="relative py-16 md:py-28 lg:py-40 overflow-x-hidden"
-      style={{ background: BG }}
+      style={{ background: PAGE_BG }}
     >
-      {/* Ambient blue glow top-right - repositioned to prevent overflow */}
+      {/* Subtle ambient — not a blob, just a soft horizon */}
       <div
         className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] translate-x-1/4 -translate-y-1/4 rounded-full lg:translate-x-1/3"
         style={{
-          background: `radial-gradient(closest-side, oklch(0.55 0.22 245 / 0.08), transparent 80%)`,
+          background: `radial-gradient(closest-side, rgba(6,182,212,0.06), transparent 80%)`,
         }}
       />
 
@@ -108,40 +123,63 @@ export function ModulesSection() {
           <div className="flex flex-col gap-12 lg:flex-row lg:gap-8">
             {/* ── LEFT: nav ── */}
             <div className="w-full lg:w-5/12 xl:w-5/12">
+              {/* Eyebrow — DM Mono */}
               <div className="flex items-center gap-2">
                 <span
                   className="h-px w-6 flex-shrink-0"
-                  style={{ background: BLUE_MID }}
+                  style={{ background: CYAN_BORDER }}
                 />
                 <span
-                  className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                  style={{ color: BLUE, opacity: 0.8 }}
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontWeight: 400,
+                    fontSize: "10px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.22em",
+                    color: CYAN,
+                    opacity: 0.8,
+                  }}
                 >
                   The platform
                 </span>
               </div>
 
+              {/* Section heading — DM Sans 300 Light */}
               <h2
-                className="mt-5 font-display text-3xl sm:text-4xl md:text-[44px] lg:text-5xl xl:text-[64px] leading-[1.1] sm:leading-[1.08] md:leading-[1.05] lg:leading-[1.02] tracking-[-0.02em]"
-                style={{ color: TEXT }}
+                className="mt-5"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 300,
+                  fontSize: "clamp(32px, 5vw, 64px)",
+                  lineHeight: 1.05,
+                  letterSpacing: "-0.035em",
+                  color: TEXT,
+                }}
               >
-                Five modules. <span style={{ color: BLUE }}>One</span> operating
+                Five modules. <span style={{ color: CYAN }}>One</span> operating
                 layer.
               </h2>
 
+              {/* Body — DM Sans Regular */}
               <p
-                className="mt-5 max-w-md text-[15px] sm:text-[16px] leading-relaxed"
-                style={{ color: TEXT_DIM }}
+                className="mt-5 max-w-md"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "16px",
+                  lineHeight: 1.55,
+                  color: TEXT_DIM,
+                }}
               >
                 Each module ships independently and composes into a single
                 executive view. Adopt what your operation needs first — extend
                 at your own pace.
               </p>
 
-              {/* Module list */}
+              {/* Module list — hairline cyan border container */}
               <div
                 className="mt-8 sm:mt-10 overflow-hidden rounded-xl"
-                style={{ border: `1px solid ${BLUE_MID}` }}
+                style={{ border: `1px solid ${CYAN_BORDER}` }}
               >
                 {MODULES.map((m, idx) => {
                   const isActive = m.id === active;
@@ -153,34 +191,54 @@ export function ModulesSection() {
                       className="flex w-full items-center justify-between px-4 sm:px-5 py-3 sm:py-4 text-left transition-all duration-300"
                       style={{
                         background: isActive
-                          ? BLUE_DIM
+                          ? CYAN_PALE
                           : idx % 2 === 0
-                          ? SURFACE
-                          : SURFACE_EL,
+                          ? CARD_BG
+                          : CARD_EL,
                         borderBottom:
                           idx < MODULES.length - 1
-                            ? `1px solid ${isActive ? BLUE_MID : BORDER}`
+                            ? `1px solid ${isActive ? CYAN_BORDER : BORDER}`
                             : "none",
-                        boxShadow: isActive ? `inset 3px 0 0 ${BLUE}` : "none",
+                        // Active: left accent bar using module color
+                        boxShadow: isActive
+                          ? `inset 3px 0 0 ${m.accent}`
+                          : "none",
                       }}
                     >
                       <div className="flex items-center gap-3 sm:gap-4">
+                        {/* Tag — DM Mono */}
                         <span
-                          className="font-mono text-[10px] flex-shrink-0"
-                          style={{ color: isActive ? BLUE : TEXT_MUTED }}
+                          style={{
+                            fontFamily: "'DM Mono', monospace",
+                            fontSize: "10px",
+                            color: isActive ? m.accent : TEXT_MUTED,
+                            flexShrink: 0,
+                          }}
                         >
                           {m.tag}
                         </span>
+                        {/* Name — DM Sans Medium */}
                         <span
-                          className="text-[14px] sm:text-[15px] font-medium tracking-tight truncate"
-                          style={{ color: isActive ? TEXT : TEXT_DIM }}
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontWeight: 500,
+                            fontSize: "14px",
+                            letterSpacing: "-0.01em",
+                            color: isActive ? TEXT : TEXT_DIM,
+                          }}
+                          className="truncate"
                         >
                           {m.name}
                         </span>
                       </div>
                       <span
-                        className="font-mono text-[14px] flex-shrink-0 ml-2"
-                        style={{ color: isActive ? BLUE : TEXT_MUTED }}
+                        style={{
+                          fontFamily: "'DM Mono', monospace",
+                          fontSize: "14px",
+                          color: isActive ? m.accent : TEXT_MUTED,
+                          flexShrink: 0,
+                          marginLeft: "8px",
+                        }}
                       >
                         {isActive ? "—" : "+"}
                       </span>
@@ -196,80 +254,120 @@ export function ModulesSection() {
                 key={current.id}
                 className="rounded-2xl p-6 sm:p-8 lg:p-10 xl:p-12"
                 style={{
-                  background: SURFACE,
-                  border: `1px solid ${BLUE_MID}`,
-                  boxShadow: `0 0 0 1px ${BLUE_DIM}, 0 40px 80px -20px rgba(0,0,0,0.5), ${BLUE_GLOW}`,
+                  background: CARD_BG,
+                  // Border uses the active module's accent — functional signal
+                  border: `1px solid ${A_BORDER}`,
+                  // No drop shadow — brand principle 03
                 }}
               >
                 {/* Card header */}
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 sm:gap-6">
                   <div className="flex-1 min-w-0">
+                    {/* Module tag — DM Mono */}
                     <div
-                      className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                      style={{ color: BLUE, opacity: 0.75 }}
+                      style={{
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "10px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.22em",
+                        color: A,
+                        opacity: 0.75,
+                      }}
                     >
                       Module {current.tag}
                     </div>
+                    {/* Module name — DM Sans Semibold, H3 scale */}
                     <h3
-                      className="mt-2 font-display text-3xl sm:text-[32px] md:text-[36px] lg:text-[40px] leading-tight tracking-tight break-words"
-                      style={{ color: TEXT }}
+                      className="mt-2 break-words"
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 600,
+                        fontSize: "clamp(28px, 4vw, 40px)",
+                        lineHeight: 1.1,
+                        letterSpacing: "-0.01em",
+                        color: TEXT,
+                      }}
                     >
                       {current.name}
                     </h3>
                   </div>
 
-                  {/* Metric chip */}
+                  {/* Metric chip — module accent, DM Sans */}
                   <div
                     className="rounded-xl px-4 py-3 text-right flex-shrink-0 self-start"
                     style={{
-                      background: BLUE_DIM,
-                      border: `1px solid ${BLUE_MID}`,
+                      background: A_PALE,
+                      border: `1px solid ${A_BORDER}`,
                     }}
                   >
                     <div
-                      className="font-display text-2xl sm:text-[24px] md:text-[26px] lg:text-[28px] leading-none tracking-tight whitespace-nowrap"
                       style={{
-                        color: BLUE,
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 300,
+                        fontSize: "clamp(20px, 3vw, 28px)",
+                        lineHeight: 1,
+                        letterSpacing: "-0.02em",
+                        color: A,
                         fontVariantNumeric: "tabular-nums",
-                        textShadow: BLUE_GLOW,
+                        whiteSpace: "nowrap",
                       }}
                     >
                       {current.metric.v}
                     </div>
                     <div
-                      className="mt-1 font-mono text-[10px] uppercase tracking-wider whitespace-nowrap"
-                      style={{ color: TEXT_MUTED }}
+                      style={{
+                        marginTop: "4px",
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "10px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.14em",
+                        color: TEXT_MUTED,
+                        whiteSpace: "nowrap",
+                      }}
                     >
                       {current.metric.l}
                     </div>
                   </div>
                 </div>
 
+                {/* Summary — DM Sans Regular */}
                 <p
-                  className="mt-6 sm:mt-8 max-w-xl text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed"
-                  style={{ color: TEXT_DIM }}
+                  className="mt-6 sm:mt-8 max-w-xl"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontWeight: 400,
+                    fontSize: "clamp(15px, 2vw, 17px)",
+                    lineHeight: 1.55,
+                    color: TEXT_DIM,
+                  }}
                 >
                   {current.summary}
                 </p>
 
-                {/* Divider */}
+                {/* Divider — gradient from module accent */}
                 <div
                   className="mt-6 sm:mt-8 h-px w-full"
                   style={{
-                    background: `linear-gradient(90deg, ${BLUE_MID}, transparent)`,
+                    background: `linear-gradient(90deg, ${A_BORDER}, transparent)`,
                   }}
                 />
 
-                {/* Bullets */}
+                {/* Bullets — DM Sans Regular */}
                 <ul className="mt-6 sm:mt-8 space-y-3 sm:space-y-4">
                   {current.bullets.map((b, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-3 text-[13px] sm:text-[14px]"
+                      className="flex items-start gap-3"
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 400,
+                        fontSize: "14px",
+                        lineHeight: 1.55,
+                      }}
                     >
                       <span
                         className="mt-2 h-px w-5 flex-shrink-0"
-                        style={{ background: BLUE }}
+                        style={{ background: A }}
                       />
                       <span
                         className="flex-1 break-words"
@@ -281,24 +379,29 @@ export function ModulesSection() {
                   ))}
                 </ul>
 
-                {/* Mini sparkline card */}
+                {/* Sparkline card — no drop shadow, hairline border */}
                 <div
                   className="mt-8 sm:mt-10 rounded-xl p-4 sm:p-5 overflow-x-auto"
                   style={{
-                    background: SURFACE_EL,
+                    background: CARD_EL,
                     border: `1px solid ${BORDER_STR}`,
                   }}
                 >
                   <div className="mb-3 flex items-center justify-between flex-wrap gap-2">
                     <span
-                      className="font-mono text-[10px] uppercase tracking-wider"
-                      style={{ color: TEXT_MUTED }}
+                      style={{
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "10px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.16em",
+                        color: TEXT_MUTED,
+                      }}
                     >
                       {current.name} · live signal
                     </span>
                     <span
                       className="inline-block h-1.5 w-1.5 rounded-full flex-shrink-0"
-                      style={{ background: BLUE, boxShadow: BLUE_GLOW }}
+                      style={{ background: A }}
                     />
                   </div>
                   <div className="min-w-[280px] w-full">
@@ -311,54 +414,43 @@ export function ModulesSection() {
                           y1="0"
                           y2="1"
                         >
-                          <stop
-                            offset="0%"
-                            stopColor="oklch(0.58 0.22 245)"
-                            stopOpacity="0.25"
-                          />
-                          <stop
-                            offset="100%"
-                            stopColor="oklch(0.58 0.22 245)"
-                            stopOpacity="0"
-                          />
+                          <stop offset="0%" stopColor={A} stopOpacity="0.22" />
+                          <stop offset="100%" stopColor={A} stopOpacity="0" />
                         </linearGradient>
                       </defs>
-                      {/* Grid lines */}
-                      {[20, 45, 70].map((y) => (
+                      {[20, 45, 70].map((yVal) => (
                         <line
-                          key={y}
+                          key={yVal}
                           x1="0"
                           x2="600"
-                          y1={y}
-                          y2={y}
+                          y1={yVal}
+                          y2={yVal}
                           stroke="rgba(255,255,255,0.05)"
                           strokeWidth="0.5"
                         />
                       ))}
-                      {/* Area fill */}
                       <path
                         d={`M0,60 ${Array.from({ length: 30 }, (_, i) => {
                           const x = (i + 1) * 20;
-                          const y =
+                          const yVal =
                             30 +
                             Math.sin(i / 2 + current.id.length) * 20 +
                             Math.cos(i / 3) * 8;
-                          return `L${x},${y}`;
+                          return `L${x},${yVal}`;
                         }).join(" ")} L600,90 L0,90 Z`}
                         fill="url(#spark-fill)"
                       />
-                      {/* Line */}
                       <path
                         d={`M0,60 ${Array.from({ length: 30 }, (_, i) => {
                           const x = (i + 1) * 20;
-                          const y =
+                          const yVal =
                             30 +
                             Math.sin(i / 2 + current.id.length) * 20 +
                             Math.cos(i / 3) * 8;
-                          return `L${x},${y}`;
+                          return `L${x},${yVal}`;
                         }).join(" ")}`}
                         fill="none"
-                        stroke="oklch(0.68 0.22 245)"
+                        stroke={CYAN_LIGHT}
                         strokeWidth="1.5"
                       />
                     </svg>

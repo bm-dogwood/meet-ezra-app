@@ -1,85 +1,448 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import MobileMenu from "../ui/MobileMenu";
-import Button from "../ui/Button";
+import { usePathname } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
 
-export function Header() {
-  const [scrolled, setScrolled] = useState(false);
+// ─── Brand tokens — Ezra V2, May 2026 ──────────────────────────────────────
+const t = {
+  bgPage: "#09090B",
+  bgCard: "#141417",
+  borderDark: "#27272A",
+  textPrimary: "#FAFAFA",
+  textMeta: "#71717A",
+  textTertiary: "#A1A1AA",
+  cyan400: "#22D3EE",
+  cyan500: "#06B6D4",
+  cyan600: "#0891B2",
+};
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+// ─── Overview section anchors ───────────────────────────────────────────────
+const OVERVIEW_ITEMS = [
+  {
+    label: "Operations",
+    href: "/#operations",
+    description: "End-to-end workflow automation",
+  },
+  {
+    label: "How It Works",
+    href: "/#how-it-works",
+    description: "Architecture under the hood",
+  },
 
+  {
+    label: "Platform",
+    href: "/#platform",
+    description: "The Ezra runtime & APIs",
+  },
+  { label: "Roadmap", href: "/#roadmap", description: "What's shipping next" },
+  {
+    label: "Architecture",
+    href: "/#architecture",
+    description: "System design & integrations",
+  },
+  {
+    label: "Why Ezra",
+    href: "/#why-ezra",
+    description: "Built for operators, not demos",
+  },
+] as const;
+
+// ─── Top-level nav ──────────────────────────────────────────────────────────
+const NAV_ITEMS = [
+  { label: "Overview", href: "/", dropdown: true },
+  { label: "The Ezra Family", href: "/bots", dropdown: false },
+  { label: "Solutions", href: "/solutions", dropdown: false },
+  { label: "Platform", href: "/platform", dropdown: false },
+  { label: "About", href: "/about", dropdown: false },
+  { label: "Contact", href: "/contact", dropdown: false },
+] as const;
+
+// ─── Chevron icon ───────────────────────────────────────────────────────────
+function Chevron({ open }: { open: boolean }) {
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-surface-950/85 backdrop-blur-xl border-b border-surface-800/50"
-          : "bg-transparent border-b border-transparent"
-      }`}
+    <svg
+      width="9"
+      height="9"
+      viewBox="0 0 9 9"
+      fill="none"
+      style={{
+        transition: "transform 200ms ease",
+        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        flexShrink: 0,
+      }}
     >
-      {/* Blue accent rule */}
+      <path
+        d="M1.5 3L4.5 6L7.5 3"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+// ─── Active route underline — 1px hairline per brand spec ──────────────────
+function ActiveBar() {
+  return (
+    <span
+      style={{
+        position: "absolute",
+        bottom: -1, // sits on the header border
+        left: 8,
+        right: 8,
+        height: 1,
+        borderRadius: 1,
+        background: `linear-gradient(90deg, ${t.cyan400}, ${t.cyan500})`,
+      }}
+    />
+  );
+}
+
+// ─── Overview Dropdown ──────────────────────────────────────────────────────
+function OverviewDropdown({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      aria-hidden={!open}
+      style={{
+        position: "absolute",
+        top: "calc(100% + 12px)",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: 340,
+        background: t.bgCard,
+        border: `1px solid ${t.borderDark}`,
+        borderRadius: 10,
+        padding: 6,
+        // No drop shadows on cards per brand principle 03
+        boxShadow: "0 24px 48px rgba(0,0,0,0.6)",
+        opacity: open ? 1 : 0,
+        pointerEvents: open ? "auto" : "none",
+        transition: "opacity 180ms ease",
+        zIndex: 100,
+      }}
+    >
+      {/* Hairline top accent — one accent treatment allowed */}
       <div
-        className={`absolute bottom-[-1px] left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent transition-opacity duration-300 ${
-          scrolled ? "opacity-100" : "opacity-0"
-        }`}
+        style={{
+          position: "absolute",
+          top: -1,
+          left: 48,
+          right: 48,
+          height: 1,
+          background: `linear-gradient(90deg, transparent, ${t.cyan400}55, transparent)`,
+        }}
       />
 
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-16 gap-8">
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-[0_0_0_1px_rgba(59,130,246,0.3),0_4px_16px_rgba(59,130,246,0.2)]">
-              <span className="text-white font-bold text-lg">E</span>
+      {/* Eyebrow label — 10px / 500 / 0.18em per typography spec */}
+      <p
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: 10,
+          fontWeight: 500,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: t.textMeta,
+          padding: "8px 12px 6px",
+          margin: 0,
+        }}
+      >
+        On this page
+      </p>
+
+      {/* 2-column grid of section links */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+        {OVERVIEW_ITEMS.map(({ label, href, description }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={onClose}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              padding: "9px 12px",
+              borderRadius: 7,
+              textDecoration: "none",
+              transition: "background 150ms",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.background =
+                "rgba(255,255,255,0.04)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.background = "transparent";
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 500,
+                color: t.textPrimary,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              {label}
+            </span>
+            <span
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 11.5,
+                fontWeight: 400,
+                color: t.textMeta,
+                lineHeight: 1.4,
+              }}
+            >
+              {description}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+export default function Header() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Close on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  return (
+    <>
+      {/* DM Sans — sole typeface per brand spec 03 */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+      `}</style>
+
+      <header
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          height: 64,
+          display: "flex",
+          alignItems: "center",
+          borderBottom: `1px solid ${t.borderDark}`,
+          background: "rgba(9,9,11,0.88)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          fontFamily: "'DM Sans', sans-serif",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1200,
+            width: "100%",
+            margin: "0 auto",
+            padding: "0 32px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          {/* ── Logomark — always cyan gradient, DM Sans 600, 0.18em per spec ── */}
+          <Link
+            href="/"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              textDecoration: "none",
+            }}
+          >
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 7,
+                background: `linear-gradient(135deg, ${t.cyan400}, ${t.cyan500})`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 13,
+                fontWeight: 700,
+                color: "white",
+                flexShrink: 0,
+              }}
+            >
+              E
             </div>
-            <span className="text-[18px] font-semibold text-white tracking-tight">
+            <span
+              style={{
+                fontWeight: 600,
+                letterSpacing: "0.18em",
+                fontSize: 13,
+                color: t.textPrimary,
+                textTransform: "uppercase",
+              }}
+            >
               Ezra
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-0.5 flex-1 justify-center">
-            {[
-              { href: "/bots", label: "The Ezra Family", active: true },
-              { href: "/solutions", label: "Solutions" },
-              { href: "/platform", label: "Platform" },
-              { href: "/about", label: "About" },
-              { href: "/contact", label: "Contact" },
-            ].map(({ href, label, active }) => (
-              <Link
-                key={href}
-                href={href}
-                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap ${
-                  active
-                    ? "text-blue-400"
-                    : "text-surface-400 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                {label}
-              </Link>
-            ))}
+          {/* ── Navigation ── */}
+          <nav style={{ display: "flex", alignItems: "center" }}>
+            {NAV_ITEMS.map(({ label, href, dropdown }) => {
+              const active = isActive(href);
+
+              if (dropdown) {
+                return (
+                  <div
+                    key={href}
+                    ref={wrapRef}
+                    style={{ position: "relative" }}
+                  >
+                    <button
+                      onClick={() => setOpen((v) => !v)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        padding: "6px 10px",
+                        borderRadius: 6,
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 13,
+                        fontWeight: active || open ? 500 : 400,
+                        color: active || open ? t.textPrimary : t.textMeta,
+                        letterSpacing: "-0.01em",
+                        position: "relative",
+                        transition: "color 150ms",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active && !open)
+                          (e.currentTarget as HTMLElement).style.color =
+                            "#D4D4D8";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!active && !open)
+                          (e.currentTarget as HTMLElement).style.color =
+                            t.textMeta;
+                      }}
+                    >
+                      {label}
+                      <Chevron open={open} />
+                      {active && <ActiveBar />}
+                    </button>
+                    <OverviewDropdown
+                      open={open}
+                      onClose={() => setOpen(false)}
+                    />
+                  </div>
+                );
+              }
+
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "6px 10px",
+                    borderRadius: 6,
+                    fontSize: 13,
+                    fontWeight: active ? 500 : 400,
+                    color: active ? t.textPrimary : t.textMeta,
+                    textDecoration: "none",
+                    letterSpacing: "-0.01em",
+                    position: "relative",
+                    transition: "color 150ms",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active)
+                      (e.currentTarget as HTMLElement).style.color = "#D4D4D8";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active)
+                      (e.currentTarget as HTMLElement).style.color = t.textMeta;
+                  }}
+                >
+                  {label}
+                  {active && <ActiveBar />}
+                </Link>
+              );
+            })}
           </nav>
 
-          <MobileMenu active={undefined} />
-          <div className="hidden md:flex items-center gap-2.5 flex-shrink-0">
-            <Link href="/login">
-              <Button
-                variant="ghost"
-                className="text-sm font-medium text-surface-400 border border-white/10 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all"
-              >
-                Sign In
-              </Button>
+          {/* ── CTA group ── */}
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <Link
+              href="/login"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 400,
+                letterSpacing: "-0.01em",
+                padding: "6px 14px",
+                borderRadius: 6,
+                color: t.textMeta,
+                textDecoration: "none",
+                transition: "color 150ms",
+              }}
+              onMouseEnter={(e) =>
+                ((e.currentTarget as HTMLElement).style.color = t.textPrimary)
+              }
+              onMouseLeave={(e) =>
+                ((e.currentTarget as HTMLElement).style.color = t.textMeta)
+              }
+            >
+              Sign In
             </Link>
-            <Link href="/contact">
-              <Button className="text-sm font-semibold bg-gradient-to-br from-blue-500 to-blue-600 border border-blue-500/40 shadow-[0_2px_8px_rgba(37,99,235,0.3)] hover:shadow-[0_4px_16px_rgba(37,99,235,0.45)] hover:from-blue-400 hover:to-blue-500 transition-all">
-                Request Demo
-              </Button>
+
+            {/* Primary CTA — cyan gradient, dark text, no shadow per principle 03 */}
+            <Link
+              href="/contact"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                letterSpacing: "-0.01em",
+                padding: "6px 16px",
+                borderRadius: 6,
+                background: `linear-gradient(135deg, ${t.cyan400}, ${t.cyan500})`,
+                color: t.bgPage,
+                textDecoration: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Request Demo
             </Link>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

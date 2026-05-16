@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { DashboardMock } from "./DashboardMock";
-import terrain from "@/assets/hero.jpeg";
+import DashboardMock from "./DashboardMock";
+import terrain from "@/assets/hero.jpg";
+
+// ── Ezra V2 brand tokens ──────────────────────────────────────────────────
+// Colors: Brand Reference May 2026
+// Typography: DM Sans 300/400/500/600, DM Mono 400 — Google Fonts
+const CYAN = "#06B6D4"; // Cyan 500 — primary accent / buttons / links
+const CYAN_LIGHT = "#22D3EE"; // Cyan 400 — hover states, gradient stop
+const CYAN_PALE = "rgba(6,182,212,0.10)";
+const CYAN_GLOW = "rgba(6,182,212,0.50)";
 
 export function Hero() {
   const [y, setY] = useState(0);
@@ -32,98 +40,79 @@ export function Hero() {
         <Image
           src={terrain}
           alt=""
-          width={1920}
-          height={1280}
-          className="h-full w-full object-cover object-center opacity-100 brightness-[1.75] contrast-[1.15] saturate-[1.35]"
+          className="h-full w-full object-cover object-center"
+          style={{
+            opacity: 4,
+            filter: "brightness(1.75) contrast(1.15) saturate(1.35)",
+          }}
           priority
         />
       </div>
 
-      {/* Light readability fade, kept transparent so the image stays visible */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,var(--background)_0%,color-mix(in_oklch,var(--background)_48%,transparent)_32%,transparent_68%),linear-gradient(180deg,transparent_0%,transparent_64%,var(--background)_100%)]" />
-
-      {/* Blue horizon lift to make the terrain read clearly */}
+      {/* Legibility fade — left-to-right + bottom fade, no colored blob */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[68%] opacity-70"
+        className="pointer-events-none absolute inset-0 z-[1]"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 22%, color-mix(in oklch, var(--accent) 34%, transparent), transparent 68%)",
+            "linear-gradient(90deg,#09090B 0%,rgba(9,9,11,0.48) 32%,transparent 68%)," +
+            "linear-gradient(180deg,transparent 0%,transparent 64%,#09090B 100%)",
         }}
       />
 
-      {/* subtle blue tint + bottom fade so content stays legible */}
-      <div className="pointer-events-none absolute inset-0 z-[2]">
-        <div
-          className="absolute inset-x-0 bottom-0 h-1/3"
-          style={{
-            background:
-              "linear-gradient(180deg, transparent 0%, var(--background) 100%)",
-          }}
-        />
-      </div>
-
-      {/* Parallax: subtle grid */}
+      {/* Subtle cyan horizon lift — restrained, not a glowing blob */}
       <div
-        className="pointer-events-none absolute inset-0 z-[3] opacity-[0.08]"
+        className="pointer-events-none absolute inset-x-0 top-0 z-[1]"
         style={{
-          backgroundImage:
-            "linear-gradient(to right, oklch(0.55 0.18 245 / 0.4) 1px, transparent 1px), linear-gradient(to bottom, oklch(0.55 0.18 245 / 0.4) 1px, transparent 1px)",
-          backgroundSize: "80px 80px",
-          maskImage:
-            "radial-gradient(ellipse at 50% 30%, black 40%, transparent 80%)",
-          transform: `translate3d(0, ${y * 0.1}px, 0)`,
+          height: "68%",
+          background: `radial-gradient(ellipse at 50% 22%, rgba(6,182,212,0.18), transparent 68%)`,
+          opacity: 0.7,
         }}
       />
 
-      {/* Blue ambient glow — top center */}
+      {/* Bottom fade */}
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 z-[3] h-[600px] w-[1100px] -translate-x-1/2 rounded-full opacity-35"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[2]"
         style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.62 0.22 245 / 0.32), transparent 70%)",
+          height: "33%",
+          background: "linear-gradient(180deg, transparent 0%, #09090B 100%)",
+        }}
+      />
+
+      {/* Parallax: hairline grid */}
+
+      {/* Cyan ambient — top center, contained */}
+      <div
+        className="pointer-events-none absolute -top-40 left-1/2 z-[3] h-[600px] w-[1100px] -translate-x-1/2 rounded-full"
+        style={{
+          opacity: 0.28,
+          background: `radial-gradient(closest-side, ${CYAN_GLOW}, transparent 70%)`,
           transform: `translate3d(-50%, ${y * 0.18}px, 0)`,
         }}
       />
 
-      {/* Blue ambient glow — bottom left edge */}
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 z-[3] h-[420px] w-[520px] opacity-25"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.55 0.24 250 / 0.30), transparent 80%)",
-          transform: `translate3d(-20%, ${y * 0.08}px, 0)`,
-        }}
-      />
+      <div className="relative z-10 mx-auto max-w-[1400px] px-4 lg:px-2">
+        {/* Status badge — DM Mono eyebrow */}
+        <div className="reveal mb-8 flex items-center gap-2"></div>
 
-      {/* Cyan glow — right edge */}
-      <div
-        className="pointer-events-none absolute right-0 top-1/3 z-[3] h-[480px] w-[520px] opacity-25"
-        style={{
-          background:
-            "radial-gradient(closest-side, oklch(0.72 0.18 220 / 0.25), transparent 80%)",
-          transform: `translate3d(20%, ${y * -0.06}px, 0)`,
-        }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10">
-        {/* Status badge */}
-        <div className="reveal mb-8 flex items-center gap-2">
-          <span className="pulse-dot inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent/85">
-            Franchise intelligence · 110 active stores
-          </span>
-        </div>
-
+        {/* Hero headline — DM Sans 300 Light, editorial scale */}
         <h1
-          className="reveal reveal-delay-1 max-w-[16ch] font-display text-[64px] font-normal leading-[0.95] tracking-[-0.02em] text-balance md:text-[96px] lg:text-[128px]"
-          style={{ transform: `translate3d(0, ${y * -0.08}px, 0)` }}
+          className="reveal reveal-delay-1 max-w-[14ch] text-balance"
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize: "clamp(56px, 9vw, 128px)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.035em",
+            color: "rgba(255,255,255,0.92)",
+            transform: `translate3d(0, ${y * -0.08}px, 0)`,
+          }}
         >
           AI-Powered Intelligence for{" "}
+          {/* Gradient only on the italic accent — brand principle 03 */}
           <span
             className="italic"
             style={{
-              backgroundImage:
-                "linear-gradient(135deg, oklch(0.78 0.18 235), oklch(0.62 0.22 250))",
+              backgroundImage: `linear-gradient(135deg, ${CYAN_LIGHT}, ${CYAN})`,
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
@@ -137,7 +126,18 @@ export function Hero() {
           className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-16"
           style={{ transform: `translate3d(0, ${y * -0.04}px, 0)` }}
         >
-          <p className="reveal reveal-delay-2 max-w-xl text-pretty text-[17px] leading-relaxed text-muted-foreground lg:col-span-6">
+          {/* Body — DM Sans Regular, ≤70ch, 1.55 line-height */}
+          <p
+            className="reveal reveal-delay-2 max-w-xl text-pretty lg:col-span-6"
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 400,
+              fontSize: "17px",
+              lineHeight: 1.55,
+              letterSpacing: 0,
+              color: "rgba(255,255,255,0.55)",
+            }}
+          >
             Ezra is the operational intelligence layer for multi-unit businesses
             — unifying loss prevention, scheduling, inventory, CRM retention and
             revenue intelligence into a single executive console.
@@ -145,26 +145,53 @@ export function Hero() {
 
           <div className="reveal reveal-delay-3 flex flex-col gap-4 lg:col-span-6 lg:items-end">
             <div className="flex flex-wrap items-center gap-3">
+              {/* Primary CTA — Cyan 500 fill, dark text for contrast */}
               <a
                 href="#contact"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-accent px-5 py-2.5 text-[13px] font-medium text-accent-foreground shadow-[0_8px_30px_-6px_oklch(0.55_0.22_245_/_0.55)] transition-all hover:brightness-110 hover:shadow-[0_10px_40px_-6px_oklch(0.55_0.22_245_/_0.7)]"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-5 py-2.5 transition-all hover:brightness-110"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 500,
+                  fontSize: "13px",
+                  background: CYAN,
+                  color: "#09090B", // dark text on cyan — per brand contrast guidance
+                  // No box-shadow — brand principle 03
+                }}
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
                 <span className="relative">Request access</span>
                 <span className="relative transition-transform group-hover:translate-x-0.5">
                   →
                 </span>
               </a>
 
+              {/* Ghost CTA — hairline cyan border */}
               <a
                 href="#platform"
-                className="inline-flex items-center gap-2 rounded-full border border-accent/35 px-5 py-2.5 text-[13px] text-accent/90 transition-colors hover:bg-accent/10"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 transition-colors hover:bg-[rgba(6,182,212,0.10)]"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "13px",
+                  border: `1px solid rgba(6,182,212,0.30)`,
+                  color: CYAN,
+                }}
               >
                 See the platform
               </a>
             </div>
 
-            <div className="flex items-center gap-6 font-mono text-[10px] uppercase tracking-wider text-accent/60">
+            {/* Meta — DM Mono captions */}
+            <div
+              className="flex items-center gap-6"
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontWeight: 400,
+                fontSize: "10px",
+                textTransform: "uppercase",
+                letterSpacing: "0.18em",
+                color: "rgba(6,182,212,0.55)",
+              }}
+            >
               <span>SOC 2 · in progress</span>
               <span>POS native</span>
               <span>Deployed in 14 days</span>
@@ -180,7 +207,8 @@ export function Hero() {
               10 - y * 0.04
             )}deg) translate3d(0, ${y * -0.02}px, 0)`,
             transformOrigin: "center top",
-            filter: "drop-shadow(0 0 60px oklch(0.55 0.22 245 / 0.25))",
+            // Subtle cyan drop — not a blob, just a glow under the card
+            filter: `drop-shadow(0 0 48px rgba(6,182,212,0.20))`,
           }}
         >
           <DashboardMock />

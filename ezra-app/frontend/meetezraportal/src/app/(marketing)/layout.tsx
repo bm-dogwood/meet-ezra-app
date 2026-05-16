@@ -4,6 +4,8 @@
 
 import type { Metadata } from "next";
 import "@/app/(marketing)/styles.css";
+import Header from "@/components/site/Header";
+import Footer from "@/components/site/Footer";
 
 export const metadata: Metadata = {
   title: "Ezra - AI Automation for Franchise Operations",
@@ -16,5 +18,12 @@ export default function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      {" "}
+      <Header />
+      {children}
+      <Footer />
+    </>
+  );
 }

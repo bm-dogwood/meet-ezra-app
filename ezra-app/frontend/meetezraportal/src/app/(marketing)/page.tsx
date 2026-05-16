@@ -23,7 +23,7 @@ import { RoadmapSection } from "@/components/site/RoadmapSection";
 import { CTAFooter } from "@/components/site/CTAFooter";
 
 import { useState, useEffect } from "react";
-import { Header } from "@/components/site/Header";
+import Header from "@/components/site/Header";
 
 // ============ Header ============
 // const Header = () => {
@@ -230,13 +230,12 @@ export default function HomePage() {
         </div>
         <BuildingSection />
         <ModulesSection />
-        <RoadmapSection />
+        {/* <RoadmapSection /> */}
         <ArchitectureSection />
         <WhyEzraSection />
 
         <CTAFooter />
       </main>
-      <Footer />
     </div>
   );
 }

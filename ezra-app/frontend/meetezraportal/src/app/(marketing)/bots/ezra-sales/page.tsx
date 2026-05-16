@@ -1,11 +1,6 @@
-'use client';
-
-// ===========================================
-// EZRA PORTAL - Ezra Sales Product Page
-// ===========================================
-
-import React from 'react';
-import Link from 'next/link';
+import { Metadata } from "next";
+import Link from "next/link";
+import { DM_Sans } from "next/font/google";
 import {
   ShoppingCart,
   ArrowRight,
@@ -16,270 +11,100 @@ import {
   Shield,
   Clock,
   TrendingUp,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import Button from '@/components/ui/Button';
+} from "lucide-react";
+import Header from "@/components/site/Header";
 
-// Reuse header/footer
-const Header = () => (
-  <header className="fixed top-0 left-0 right-0 z-50 bg-surface-950/80 backdrop-blur-xl border-b border-surface-800/50">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="flex items-center justify-between h-16">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-ezra-400 to-ezra-600 flex items-center justify-center shadow-glow">
-            <span className="text-white font-bold text-lg">E</span>
-          </div>
-          <span className="text-xl font-semibold text-white tracking-tight">Ezra</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-8">
-          <Link href="/bots" className="text-surface-300 hover:text-white transition-colors">The Ezra Family</Link>
-          <Link href="/solutions" className="text-surface-300 hover:text-white transition-colors">Solutions</Link>
-          <Link href="/platform" className="text-surface-300 hover:text-white transition-colors">Platform</Link>
-          <Link href="/about" className="text-surface-300 hover:text-white transition-colors">About</Link>
-          <Link href="/contact" className="text-surface-300 hover:text-white transition-colors">Contact</Link>
-        </nav>
-        <div className="hidden md:flex items-center gap-4">
-          <Link href="/login"><Button variant="ghost">Sign In</Button></Link>
-          <Link href="/contact"><Button>Request Demo</Button></Link>
-        </div>
-      </div>
-    </div>
-  </header>
-);
+import terrain from "@/assets/hero.jpeg";
+import ctaImage from "@/assets/cta.jpeg";
 
-const Footer = () => (
-  <footer className="py-12 bg-surface-950 border-t border-surface-800">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-ezra-400 to-ezra-600 flex items-center justify-center">
-            <span className="text-white font-bold">E</span>
-          </div>
-          <span className="text-surface-400">© 2026 Ezra AI. All rights reserved.</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <Link href="/privacy" className="text-surface-400 hover:text-surface-300 text-sm">Privacy Policy</Link>
-          <Link href="/terms" className="text-surface-400 hover:text-surface-300 text-sm">Terms of Service</Link>
-        </div>
-      </div>
-    </div>
-  </footer>
-);
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  variable: "--font-dm-sans",
+});
 
-export default function EzraSalesPage() {
-  const metrics = [
-    { label: 'Daily Revenue', value: 'Real-time' },
-    { label: 'Locations Supported', value: '200+' },
-    { label: 'POS Systems', value: '5+' },
-    { label: 'Data Freshness', value: '< 15 min' },
-  ];
+export const metadata: Metadata = {
+  title: "Ezra Sales — Real-time Franchise Sales Intelligence",
+  description:
+    "One dashboard, any POS system, complete visibility. Ezra Sales unifies revenue across all your franchise locations in near real-time.",
+};
 
-  const features = [
-    {
-      icon: BarChart3,
-      title: 'Unified Dashboards',
-      description: 'See all your locations on one screen. Compare performance, identify trends, and drill down to individual stores.',
-    },
-    {
-      icon: Globe,
-      title: 'Universal POS Support',
-      description: 'Zenoti, Stripe, Toast, Square—Ezra Sales works with any POS system through APIs or intelligent automation.',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Goal Tracking',
-      description: 'Set revenue goals per location and track real-time progress. Get alerted when stores fall behind.',
-    },
-    {
-      icon: Clock,
-      title: 'Near Real-Time Data',
-      description: 'Data syncs automatically throughout the day. Most locations see data within 15 minutes of transactions.',
-    },
-    {
-      icon: Shield,
-      title: 'Enterprise Security',
-      description: 'Role-based access control, audit logging, and brand isolation. Your data stays yours.',
-    },
-    {
-      icon: Zap,
-      title: 'AI Insights',
-      description: 'Automated anomaly detection highlights issues before they become problems. Let AI do the monitoring.',
-    },
-  ];
+// Sales module accent: CYAN
+const ACCENT = {
+  primary: "#06B6D4",
+  light: "#22D3EE",
+  muted: "rgba(6, 182, 212, 0.1)",
+  border: "rgba(6, 182, 212, 0.3)",
+  text: "#22D3EE",
+  gradient: "from-cyan-500 to-cyan-400",
+};
 
-  const posSystems = [
-    { name: 'Zenoti', method: 'Secure Automation', status: 'Active' },
-    { name: 'Stripe', method: 'Direct API', status: 'Active' },
-    { name: 'Toast', method: 'API Integration', status: 'Coming Soon' },
-    { name: 'Square', method: 'API Integration', status: 'Planned' },
-    { name: 'Clover', method: 'API Integration', status: 'Planned' },
-  ];
+const metrics = [
+  { label: "Daily Revenue", value: "Real-time" },
+  { label: "Locations Supported", value: "200+" },
+  { label: "POS Systems", value: "5+" },
+  { label: "Data Freshness", value: "< 15 min" },
+];
 
-  return (
-    <div className="min-h-screen bg-surface-950">
-      <Header />
+const features = [
+  {
+    icon: BarChart3,
+    title: "Unified Dashboards",
+    description:
+      "See all your locations on one screen. Compare performance, identify trends, and drill down to individual stores.",
+  },
+  {
+    icon: Globe,
+    title: "Universal POS Support",
+    description:
+      "Zenoti, Stripe, Toast, Square—Ezra Sales works with any POS system through APIs or intelligent automation.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Goal Tracking",
+    description:
+      "Set revenue goals per location and track real-time progress. Get alerted when stores fall behind.",
+  },
+  {
+    icon: Clock,
+    title: "Near Real-Time Data",
+    description:
+      "Data syncs automatically throughout the day. Most locations see data within 15 minutes of transactions.",
+  },
+  {
+    icon: Shield,
+    title: "Enterprise Security",
+    description:
+      "Role-based access control, audit logging, and brand isolation. Your data stays yours.",
+  },
+  {
+    icon: Zap,
+    title: "AI Insights",
+    description:
+      "Automated anomaly detection highlights issues before they become problems. Let AI do the monitoring.",
+  },
+];
 
-      <main className="pt-16">
-        {/* Hero */}
-        <section className="relative py-24 overflow-hidden">
-          <div className="absolute inset-0 bg-grid opacity-30" />
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-ezra-500/20 rounded-full blur-[128px]" />
+const posSystems = [
+  { name: "Zenoti", method: "Secure Automation", status: "Active" },
+  { name: "Stripe", method: "Direct API", status: "Active" },
+  { name: "Toast", method: "API Integration", status: "Coming Soon" },
+  { name: "Square", method: "API Integration", status: "Planned" },
+  { name: "Clover", method: "API Integration", status: "Planned" },
+];
 
-          <div className="relative max-w-7xl mx-auto px-6">
-            <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-ezra-500/10 border border-ezra-500/20 mb-8">
-                <ShoppingCart className="w-4 h-4 text-ezra-400" />
-                <span className="text-sm text-ezra-400 font-medium">Sales Intelligence Bot</span>
-              </div>
+const dataFields = [
+  "Total Revenue (daily, weekly, monthly)",
+  "Service Revenue vs Product Revenue",
+  "Guest Count & Ticket Count",
+  "Average Ticket Value",
+  "Tips by Service Provider",
+  "Cash vs Card Revenue",
+  "Refunds & Discounts",
+  "Goal Tracking & Variance",
+];
 
-              <h1 className="text-display-lg text-white mb-6">
-                Ezra Sales
-              </h1>
-              <p className="text-2xl text-surface-400 mb-8 leading-relaxed">
-                Real-time sales intelligence across all your franchise locations.
-                One dashboard, any POS system, complete visibility.
-              </p>
-
-              <div className="flex flex-wrap gap-4 mb-12">
-                <Link href="/contact">
-                  <Button size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-                    Request a Demo
-                  </Button>
-                </Link>
-                <Link href="/bots">
-                  <Button variant="outline" size="lg">
-                    View All Bots
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Quick stats */}
-              <div className="grid grid-cols-4 gap-6">
-                {metrics.map((metric) => (
-                  <div key={metric.label}>
-                    <p className="text-2xl font-semibold text-white">{metric.value}</p>
-                    <p className="text-sm text-surface-500">{metric.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* POS Systems */}
-        <section className="py-24 bg-surface-900">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-display-sm text-white mb-4">Universal POS Integration</h2>
-              <p className="text-lg text-surface-400 max-w-2xl mx-auto">
-                Ezra Sales is POS-agnostic. We connect to your existing system—no migration required.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-5 gap-4">
-              {posSystems.map((pos) => (
-                <div
-                  key={pos.name}
-                  className={cn(
-                    'p-6 rounded-xl text-center',
-                    'border border-surface-800 bg-surface-850/50',
-                    'hover:border-ezra-500/50 transition-all duration-300'
-                  )}
-                >
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-surface-800 flex items-center justify-center">
-                    <Globe className="w-6 h-6 text-ezra-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-1">{pos.name}</h3>
-                  <p className="text-xs text-surface-500 mb-2">{pos.method}</p>
-                  <span
-                    className={cn(
-                      'inline-block px-2 py-0.5 rounded-full text-xs font-medium',
-                      pos.status === 'Active'
-                        ? 'bg-success-500/10 text-success-500'
-                        : pos.status === 'Coming Soon'
-                        ? 'bg-warning-500/10 text-warning-500'
-                        : 'bg-surface-700 text-surface-400'
-                    )}
-                  >
-                    {pos.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <p className="text-center text-surface-500 mt-8">
-              Don't see your POS? <Link href="/contact" className="text-ezra-400 hover:text-ezra-300">Contact us</Link> — we're adding new integrations regularly.
-            </p>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="py-24 bg-surface-950">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-display-sm text-white mb-4">Everything You Need</h2>
-              <p className="text-lg text-surface-400 max-w-2xl mx-auto">
-                Ezra Sales gives you complete visibility into your franchise performance.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <div
-                    key={feature.title}
-                    className={cn(
-                      'p-6 rounded-xl',
-                      'bg-surface-900 border border-surface-800',
-                      'hover:border-ezra-500/30 transition-all duration-300'
-                    )}
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-ezra-500/10 flex items-center justify-center mb-4">
-                      <Icon className="w-6 h-6 text-ezra-400" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-surface-400">{feature.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Data Fields */}
-        <section className="py-24 bg-surface-900">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-display-sm text-white mb-6">Comprehensive Data Model</h2>
-                <p className="text-lg text-surface-400 mb-8">
-                  Every metric you need, normalized from any POS system into a consistent schema.
-                </p>
-
-                <div className="space-y-4">
-                  {[
-                    'Total Revenue (daily, weekly, monthly)',
-                    'Service Revenue vs Product Revenue',
-                    'Guest Count & Ticket Count',
-                    'Average Ticket Value',
-                    'Tips by Service Provider',
-                    'Cash vs Card Revenue',
-                    'Refunds & Discounts',
-                    'Goal Tracking & Variance',
-                  ].map((item) => (
-                    <div key={item} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-ezra-400" />
-                      <span className="text-surface-300">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-surface-850 rounded-2xl p-8 border border-surface-700">
-                <h3 className="text-lg font-semibold text-white mb-6">Sample Data Schema</h3>
-                <pre className="text-sm text-surface-400 font-mono overflow-x-auto">
-{`{
+const sampleSchema = `{
   "date": "2024-01-15",
   "location_id": "loc-80660",
   "total_revenue": 4250.00,
@@ -296,7 +121,201 @@ export default function EzraSalesPage() {
   "goal_revenue": 4000.00,
   "goal_gap": 250.00,
   "goal_gap_percent": 6.25
-}`}
+}`;
+
+function statusStyles(status: string) {
+  if (status === "Active")
+    return "border-cyan-500/30 bg-cyan-500/10 text-cyan-400";
+  if (status === "Coming Soon")
+    return "border-yellow-500/30 bg-yellow-500/10 text-yellow-400";
+  return "border-zinc-700 bg-zinc-800/40 text-zinc-400";
+}
+
+export default function EzraSalesPage() {
+  return (
+    <div
+      className={`${dmSans.variable} min-h-screen bg-[#09090B] font-sans text-[#FAFAFA] antialiased`}
+    >
+      <Header />
+
+      <main className="pt-16">
+        {/* Hero */}
+        <section className="relative isolate overflow-hidden pt-24 pb-20 lg:pt-32 lg:pb-28">
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <img
+              src={terrain.src}
+              alt=""
+              className="h-full w-full object-cover object-center opacity-30 brightness-[0.7] contrast-[1.1] saturate-[0.8]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#09090B] via-transparent to-[#09090B]" />
+          </div>
+
+          <div className="relative mx-auto max-w-[1200px] px-6 lg:px-10">
+            <div className="animate-fade-up mb-8 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/5 px-3 py-1.5">
+              <ShoppingCart className="h-3.5 w-3.5 text-cyan-400" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-cyan-400/80">
+                Sales Intelligence Bot
+              </span>
+            </div>
+
+            <h1 className="animate-fade-up animation-delay-100 max-w-[14ch] text-[64px] font-semibold leading-[0.95] tracking-[-0.02em] text-balance md:text-[96px] lg:text-[120px]">
+              Ezra <span className="italic text-cyan-400">Sales.</span>
+            </h1>
+
+            <p className="animate-fade-up animation-delay-200 mt-8 max-w-2xl text-[18px] leading-relaxed text-zinc-400">
+              Real-time sales intelligence across all your franchise locations.
+              One dashboard, any POS system, complete visibility.
+            </p>
+
+            <div className="animate-fade-up animation-delay-300 mt-10 flex flex-wrap items-center gap-3">
+              <a
+                href="#demo"
+                className="group inline-flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-2.5 text-[13px] font-medium text-black transition-all hover:bg-cyan-400"
+              >
+                Request a Demo
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </a>
+              <Link
+                href="/bots"
+                className="inline-flex items-center gap-2 rounded-full border border-cyan-500/50 px-5 py-2.5 text-[13px] text-cyan-400 transition-colors hover:bg-cyan-500/10"
+              >
+                View All Bots
+              </Link>
+            </div>
+
+            <div className="animate-fade-up animation-delay-400 mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-zinc-800 bg-zinc-800/50 md:grid-cols-4">
+              {metrics.map((m) => (
+                <div key={m.label} className="bg-[#141417] p-6">
+                  <div className="text-[28px] font-medium leading-tight text-white md:text-[32px]">
+                    {m.value}
+                  </div>
+                  <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
+                    {m.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* POS Systems */}
+        <section className="border-t border-zinc-800 py-20 lg:py-24">
+          <div className="mx-auto max-w-[1200px] px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-[40px] font-medium leading-tight tracking-tight text-white md:text-[56px]">
+                Universal POS Integration
+              </h2>
+              <p className="mt-4 text-[15px] leading-relaxed text-zinc-400">
+                Ezra Sales is POS-agnostic. We connect to your existing
+                system—no migration required.
+              </p>
+            </div>
+
+            <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {posSystems.map((pos) => (
+                <div
+                  key={pos.name}
+                  className="rounded-xl border border-zinc-800 bg-[#141417] p-6 transition-colors hover:border-cyan-500/40"
+                >
+                  <div className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-500/30 bg-cyan-500/10 font-mono text-[16px] text-cyan-400">
+                    {pos.name[0]}
+                  </div>
+                  <p className="mt-4 text-[20px] font-medium text-white">
+                    {pos.name}
+                  </p>
+                  <p className="mt-1 text-[12px] text-zinc-500">{pos.method}</p>
+                  <span
+                    className={`mt-4 inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider ${statusStyles(
+                      pos.status
+                    )}`}
+                  >
+                    {pos.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-10 text-center text-[13px] text-zinc-500">
+              Don't see your POS?{" "}
+              <a
+                href="#demo"
+                className="text-cyan-400 underline-offset-4 hover:underline"
+              >
+                Contact us
+              </a>{" "}
+              — we're adding new integrations regularly.
+            </p>
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="border-t border-zinc-800 py-20 lg:py-28">
+          <div className="mx-auto max-w-[1200px] px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-[40px] font-medium leading-tight tracking-tight text-white md:text-[56px]">
+                Everything You Need
+              </h2>
+              <p className="mt-4 text-[15px] leading-relaxed text-zinc-400">
+                Ezra Sales gives you complete visibility into your franchise
+                performance.
+              </p>
+            </div>
+
+            <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {features.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <div
+                    key={f.title}
+                    className="group rounded-xl border border-zinc-800 bg-[#141417] p-7 transition-colors hover:border-cyan-500/40"
+                  >
+                    <div className="grid h-11 w-11 place-items-center rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="mt-5 text-[22px] font-medium leading-tight text-white">
+                      {f.title}
+                    </h3>
+                    <p className="mt-2.5 text-[14px] leading-relaxed text-zinc-400">
+                      {f.description}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Data model */}
+        <section className="border-t border-zinc-800 py-20 lg:py-28">
+          <div className="mx-auto max-w-[1200px] px-6 lg:px-10">
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
+              <div>
+                <h2 className="text-[40px] font-medium leading-tight tracking-tight text-white md:text-[52px]">
+                  Comprehensive Data Model
+                </h2>
+                <p className="mt-4 text-[15px] leading-relaxed text-zinc-400">
+                  Every metric you need, normalized from any POS system into a
+                  consistent schema.
+                </p>
+                <ul className="mt-8 space-y-3">
+                  {dataFields.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2.5 text-[14px] text-white/90"
+                    >
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                  Sample Data Schema
+                </p>
+                <pre className="overflow-x-auto rounded-xl border border-zinc-800 bg-black/40 p-6 font-mono text-[12.5px] leading-relaxed text-white/80">
+                  {sampleSchema}
                 </pre>
               </div>
             </div>
@@ -304,25 +323,38 @@ export default function EzraSalesPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-24 bg-surface-950">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <h2 className="text-display-sm text-white mb-6">
-              Ready to Transform Your Sales Visibility?
+        <section className="relative isolate overflow-hidden border-t border-zinc-800 py-28 lg:py-36">
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <img
+              src={ctaImage.src}
+              alt=""
+              className="h-full w-full object-cover object-center opacity-20 brightness-[0.6] saturate-[0.7]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#09090B] via-transparent to-[#09090B]" />
+            <div className="absolute inset-0 opacity-30 bg-radial-gradient from-cyan-500 via-transparent to-transparent" />
+          </div>
+
+          <div className="relative mx-auto max-w-[1100px] px-6 text-center lg:px-10">
+            <h2 className="mx-auto max-w-[20ch] text-[44px] font-medium leading-[1.02] tracking-[-0.02em] text-balance text-white md:text-[64px] lg:text-[76px]">
+              Ready to transform your sales{" "}
+              <span className="italic text-cyan-400">visibility?</span>
             </h2>
-            <p className="text-lg text-surface-400 mb-10 max-w-2xl mx-auto">
-              Ezra Sales is custom-configured for each client. Let's talk about how we can
-              connect to your POS system and get you real-time insights.
+            <p className="mx-auto mt-8 max-w-xl text-pretty text-[16px] leading-relaxed text-zinc-400">
+              Ezra Sales is custom-configured for each client. Let's talk about
+              how we can connect to your POS system and get you real-time
+              insights.
             </p>
-            <Link href="/contact">
-              <Button size="lg" rightIcon={<ArrowRight className="w-5 h-5" />}>
-                Schedule a Demo
-              </Button>
-            </Link>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#demo"
+                className="inline-flex items-center gap-2 rounded-full bg-cyan-500 px-6 py-3 text-[14px] font-medium text-black transition-all hover:bg-cyan-400"
+              >
+                Schedule a Demo <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   );
 }

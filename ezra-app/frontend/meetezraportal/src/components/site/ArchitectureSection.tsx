@@ -1,12 +1,30 @@
 import { SectionHeader } from "./SectionHeader";
 
-const BLUE = "#378ADD";
-const BLUE_DEEP = "#185FA5";
-const BLUE_TEXT = "#0C447C";
-const BLUE_PALE = "rgba(55,138,221,0.10)";
-const BLUE_PALE2 = "rgba(55,138,221,0.18)";
-const BLUE_BORDER = "rgba(55,138,221,0.35)";
-const BLUE_LIGHT = "#B5D4F4";
+// ── Ezra V2 brand tokens ──────────────────────────────────────────────────
+// Colors: Brand Reference May 2026
+// Typography: DM Sans 300/400/500/600, DM Mono 400
+const PAGE_BG = "#09090B";
+const CARD_BG = "#141417";
+
+// Light-mode surface for the architecture diagram (brand uses light for docs/diagrams)
+const DIAGRAM_BG = "#F5F6F8";
+const DIAGRAM_BORDER = "rgba(0,0,0,0.09)";
+
+// Cyan scale
+const CYAN = "#06B6D4"; // Cyan 500 — primary
+const CYAN_700 = "#0E7490"; // Cyan 700 — headings on light surfaces
+const CYAN_LIGHT = "#22D3EE"; // Cyan 400
+const CYAN_100 = "#CFFAFE"; // Cyan 100
+const CYAN_PALE = "rgba(6,182,212,0.10)";
+const CYAN_PALE2 = "rgba(6,182,212,0.18)";
+const CYAN_BORDER = "rgba(6,182,212,0.30)";
+
+// Dark neutrals — Zinc scale
+const ZINC_800 = "#27272A";
+const ZINC_400 = "#A1A1AA";
+
+const TEXT_DARK = "#0D0F14"; // primary on light bg
+const TEXT_MEDIUM = "#3F3F46"; // secondary on light bg
 
 const SOURCES = ["Toast", "Square", "Aloha", "Revel", "Lightspeed", "Clover"];
 const DECISIONS = [
@@ -21,59 +39,115 @@ const PIPELINE = ["Normalize", "Detect", "Recommend", "Act"];
 
 export function ArchitectureSection() {
   return (
-    <section id="architecture" className="relative bg-surface py-28 lg:py-40">
+    <section
+      id="architecture"
+      className="relative py-28 lg:py-40"
+      style={{ background: PAGE_BG }}
+    >
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
+        {/* Eyebrow — DM Mono */}
         <div
-          className="font-mono text-[10px] uppercase tracking-[0.22em]"
-          style={{ color: BLUE }}
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 400,
+            fontSize: "10px",
+            textTransform: "uppercase",
+            letterSpacing: "0.22em",
+            color: CYAN,
+            marginBottom: "20px",
+          }}
         >
           Architecture
         </div>
-        <SectionHeader
-          eyebrow=""
-          title="The operational layer between your POS and your decisions."
-          description="Ezra ingests every transaction, schedule, invoice and guest interaction — normalizes them — and outputs decisions, not dashboards."
-        />
 
+        {/* Section heading — DM Sans 300 Light */}
+        <h2
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize: "clamp(36px, 5vw, 64px)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.035em",
+            color: "rgba(255,255,255,0.92)",
+            maxWidth: "22ch",
+          }}
+        >
+          The operational layer between your POS and your decisions.
+        </h2>
+
+        {/* Description — DM Sans Regular */}
+        <p
+          style={{
+            marginTop: "16px",
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: 1.55,
+            color: "rgba(255,255,255,0.55)",
+            maxWidth: "56ch",
+          }}
+        >
+          Ezra ingests every transaction, schedule, invoice and guest
+          interaction — normalizes them — and outputs decisions, not dashboards.
+        </p>
+
+        {/* Diagram — light surface per brand (light for docs/diagrams) */}
         <div
           className="mt-20 rounded-2xl p-8 lg:p-14"
           style={{
-            background: "#f5f6f8",
-            border: "1px solid rgba(0,0,0,0.09)",
-            boxShadow: "0 4px 32px rgba(0,0,0,0.08)",
+            background: DIAGRAM_BG,
+            border: `1px solid ${DIAGRAM_BORDER}`,
+            // No drop shadow — brand principle 03
           }}
         >
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr_auto_1fr]">
             {/* Sources */}
             <div>
               <div
-                className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                style={{ color: "rgba(13,15,20,0.36)" }}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "10px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.22em",
+                  color: ZINC_400,
+                  marginBottom: "16px",
+                }}
               >
                 Sources
               </div>
-              <div className="mt-4 space-y-2">
+              <div className="space-y-2">
                 {SOURCES.map((s) => (
                   <div
                     key={s}
                     className="flex items-center justify-between rounded-md px-3 py-2.5"
                     style={{
                       background: "#ffffff",
-                      border: "1px solid rgba(0,0,0,0.09)",
+                      border: `1px solid ${DIAGRAM_BORDER}`,
                     }}
                   >
+                    {/* Source name — DM Sans Medium */}
                     <span
-                      className="text-[13px] font-medium"
-                      style={{ color: "#0d0f14" }}
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: TEXT_DARK,
+                      }}
                     >
                       {s}
                     </span>
+                    {/* POS badge — Cyan on light surface */}
                     <span
-                      className="rounded px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider"
                       style={{
-                        background: BLUE_PALE2,
-                        color: BLUE_TEXT,
-                        border: `0.5px solid ${BLUE_BORDER}`,
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "9px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.12em",
+                        background: CYAN_PALE2,
+                        color: CYAN_700,
+                        border: `0.5px solid ${CYAN_BORDER}`,
+                        borderRadius: "4px",
+                        padding: "2px 6px",
                       }}
                     >
                       POS
@@ -94,76 +168,109 @@ export function ArchitectureSection() {
                 y1="24"
                 x2="40"
                 y2="24"
-                stroke={BLUE_LIGHT}
+                stroke={CYAN_100}
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
               />
               <path
                 d="M36,18 L44,24 L36,30"
-                stroke={BLUE}
+                stroke={CYAN}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
 
-            {/* Ezra core */}
+            {/* Ezra core — Cyan 700 dark surface, editorial */}
             <div
               className="relative overflow-hidden rounded-2xl p-6"
               style={{
-                background: BLUE_TEXT,
-                border: `1px solid ${BLUE}`,
-                boxShadow: `0 20px 60px -10px rgba(0,0,0,0.22), 0 0 0 1px ${BLUE_BORDER}`,
+                background: CYAN_700,
+                border: `1px solid ${CYAN}`,
+                // No drop shadow — brand principle 03
               }}
             >
+              {/* Eyebrow */}
               <div
-                className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                style={{ color: "rgba(181,212,244,0.55)" }}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "10px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.22em",
+                  color: "rgba(207,250,254,0.55)",
+                  marginBottom: "12px",
+                }}
               >
                 Ezra Layer
               </div>
+
+              {/* Heading — DM Sans 400 Regular */}
               <div
-                className="mt-3 font-display text-[24px] leading-tight tracking-tight"
-                style={{ color: "#fff" }}
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: "24px",
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.02em",
+                  color: "#ffffff",
+                  marginBottom: "20px",
+                }}
               >
                 Operational intelligence engine
               </div>
-              <div className="mt-5 space-y-1.5">
+
+              <div className="space-y-1.5">
                 {PIPELINE.map((p, i) => (
                   <div
                     key={p}
                     className="flex items-center justify-between rounded-md px-3 py-2"
                     style={{
-                      background: "rgba(181,212,244,0.08)",
-                      border: "1px solid rgba(181,212,244,0.14)",
+                      background: "rgba(207,250,254,0.08)",
+                      border: "1px solid rgba(207,250,254,0.14)",
                     }}
                   >
+                    {/* Step — DM Sans Regular */}
                     <span
-                      className="text-[12px]"
-                      style={{ color: "rgba(255,255,255,0.85)" }}
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 400,
+                        fontSize: "12px",
+                        color: "rgba(255,255,255,0.85)",
+                      }}
                     >
                       {p}
                     </span>
+                    {/* Index — DM Mono */}
                     <span
-                      className="font-mono text-[9px]"
-                      style={{ color: "rgba(181,212,244,0.40)" }}
+                      style={{
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "9px",
+                        color: "rgba(207,250,254,0.40)",
+                      }}
                     >
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </div>
                 ))}
               </div>
+
+              {/* Live indicator */}
               <div
                 className="mt-5 flex items-center gap-2 border-t pt-4"
-                style={{ borderColor: "rgba(181,212,244,0.14)" }}
+                style={{ borderColor: "rgba(207,250,254,0.14)" }}
               >
                 <span
                   className="inline-block h-1.5 w-1.5 rounded-full animate-pulse"
-                  style={{ background: BLUE }}
+                  style={{ background: CYAN_LIGHT }}
                 />
                 <span
-                  className="font-mono text-[10px] uppercase tracking-wider"
-                  style={{ color: "rgba(181,212,244,0.45)" }}
+                  style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "10px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.16em",
+                    color: "rgba(207,250,254,0.45)",
+                  }}
                 >
                   1.4M events / day
                 </span>
@@ -181,13 +288,13 @@ export function ArchitectureSection() {
                 y1="24"
                 x2="40"
                 y2="24"
-                stroke={BLUE_LIGHT}
+                stroke={CYAN_100}
                 strokeWidth="1.5"
                 strokeDasharray="4 3"
               />
               <path
                 d="M36,18 L44,24 L36,30"
-                stroke={BLUE}
+                stroke={CYAN}
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -197,30 +304,47 @@ export function ArchitectureSection() {
             {/* Decisions */}
             <div>
               <div
-                className="font-mono text-[10px] uppercase tracking-[0.22em]"
-                style={{ color: "rgba(13,15,20,0.36)" }}
+                style={{
+                  fontFamily: "'DM Mono', monospace",
+                  fontSize: "10px",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.22em",
+                  color: ZINC_400,
+                  marginBottom: "16px",
+                }}
               >
                 Decisions
               </div>
-              <div className="mt-4 space-y-2">
+              <div className="space-y-2">
                 {DECISIONS.map((d) => (
                   <div
                     key={d}
-                    className="flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-[rgba(55,138,221,0.18)]"
+                    className="flex items-center justify-between rounded-md px-3 py-2.5 transition-colors hover:bg-[rgba(6,182,212,0.18)]"
                     style={{
-                      background: BLUE_PALE,
-                      border: `1px solid ${BLUE_BORDER}`,
+                      background: CYAN_PALE,
+                      border: `1px solid ${CYAN_BORDER}`,
                     }}
                   >
+                    {/* Decision — DM Sans Medium */}
                     <span
-                      className="text-[13px] font-medium"
-                      style={{ color: "#0d0f14" }}
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: TEXT_DARK,
+                      }}
                     >
                       {d}
                     </span>
+                    {/* Live badge — DM Mono */}
                     <span
-                      className="font-mono text-[9px] uppercase tracking-wider"
-                      style={{ color: BLUE_DEEP }}
+                      style={{
+                        fontFamily: "'DM Mono', monospace",
+                        fontSize: "9px",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.12em",
+                        color: CYAN_700,
+                      }}
                     >
                       live
                     </span>

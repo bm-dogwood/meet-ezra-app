@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { SectionHeader } from "./SectionHeader";
 
-const BLUE = "oklch(0.58 0.22 245)";
-const BLUE_DIM = "oklch(0.58 0.22 245 / 0.15)";
-const BLUE_MID = "oklch(0.58 0.22 245 / 0.4)";
-const BLUE_GLOW = "0 0 20px oklch(0.58 0.22 245 / 0.3)";
+// ── Ezra V2 brand tokens ──────────────────────────────────────────────────
+// Colors: Brand Reference May 2026
+// Typography: DM Sans 300/400/500/600, DM Mono 400
+const PAGE_BG = "#09090B";
+const CARD_BG = "#141417"; // dark card surface
+
+const CYAN = "#06B6D4"; // Cyan 500 — primary accent
+const CYAN_LIGHT = "#22D3EE"; // Cyan 400
+const CYAN_PALE = "rgba(6,182,212,0.10)";
+const CYAN_BORDER = "rgba(6,182,212,0.28)";
+
+const TEXT = "rgba(255,255,255,0.92)";
+const TEXT_DIM = "rgba(255,255,255,0.55)";
+const TEXT_MUTED = "rgba(255,255,255,0.30)";
 
 const PROBLEMS = [
   {
@@ -48,7 +58,7 @@ function ProblemCard({ p }: { p: (typeof PROBLEMS)[number] }) {
     <article
       className="relative p-8 lg:p-10"
       style={{
-        background: "oklch(0.10 0.015 245)",
+        background: CARD_BG,
         transition: "background 300ms",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -56,25 +66,41 @@ function ProblemCard({ p }: { p: (typeof PROBLEMS)[number] }) {
     >
       {/* Header */}
       <div className="flex items-start justify-between">
+        {/* Code / Title — DM Mono eyebrow */}
         <div
-          className="font-mono text-[11px] uppercase tracking-[0.2em]"
-          style={{ color: BLUE, opacity: 0.85 }}
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 400,
+            fontSize: "11px",
+            textTransform: "uppercase",
+            letterSpacing: "0.20em",
+            color: CYAN,
+            opacity: 0.85,
+          }}
         >
           {p.code} / {p.title}
         </div>
+
+        {/* "Observed" badge — DM Mono, subtle cyan tint */}
         <div
-          className="rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider"
           style={{
-            background: BLUE_DIM,
-            color: BLUE,
-            border: `1px solid ${BLUE_MID}`,
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 400,
+            fontSize: "9px",
+            textTransform: "uppercase",
+            letterSpacing: "0.16em",
+            background: CYAN_PALE,
+            color: CYAN,
+            border: `1px solid ${CYAN_BORDER}`,
+            borderRadius: "9999px",
+            padding: "2px 8px",
           }}
         >
           observed
         </div>
       </div>
 
-      {/* Bar chart — fixed 60px tall so bars are always visible */}
+      {/* Bar chart — 60px tall, bars animate on hover */}
       <div className="mt-8 flex items-end gap-1.5" style={{ height: "60px" }}>
         {p.bars.map((h, i) => (
           <div
@@ -82,36 +108,60 @@ function ProblemCard({ p }: { p: (typeof PROBLEMS)[number] }) {
             className="flex-1 rounded-sm"
             style={{
               height: `${h * 0.6}px`,
-              background: hovered ? BLUE : BLUE_DIM,
-              border: `1px solid ${hovered ? BLUE : BLUE_MID}`,
-              boxShadow: hovered ? BLUE_GLOW : "none",
+              // Hover: Cyan 500; rest: subtle cyan pale fill
+              background: hovered ? CYAN : CYAN_PALE,
+              border: `1px solid ${hovered ? CYAN : CYAN_BORDER}`,
+              // No box-shadow — brand principle 03; glow removed
               transition: [
                 `background 400ms ${i * 25}ms`,
                 `border-color 400ms ${i * 25}ms`,
-                `box-shadow 400ms ${i * 25}ms`,
               ].join(", "),
             }}
           />
         ))}
       </div>
 
-      {/* Metric */}
+      {/* Metric — DM Sans 300 Light, editorial scale */}
       <div className="mt-8 flex items-baseline gap-3">
         <div
-          className="font-display text-[44px] leading-none tracking-tight"
           style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize: "44px",
+            lineHeight: 1,
+            letterSpacing: "-0.03em",
             fontVariantNumeric: "tabular-nums",
-            color: BLUE,
-            textShadow: hovered ? BLUE_GLOW : "none",
-            transition: "text-shadow 300ms",
+            color: CYAN,
+            // No text-shadow glow — brand principle 03
           }}
         >
           {p.metric}
         </div>
-        <div className="text-[12px] text-muted-foreground">{p.metricLabel}</div>
+        {/* Metric label — DM Sans Regular */}
+        <div
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 400,
+            fontSize: "12px",
+            lineHeight: 1.4,
+            color: TEXT_MUTED,
+          }}
+        >
+          {p.metricLabel}
+        </div>
       </div>
 
-      <p className="mt-5 max-w-md text-[14px] leading-relaxed text-muted-foreground">
+      {/* Body — DM Sans Regular, ≤52ch measure */}
+      <p
+        className="mt-5 max-w-md"
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontWeight: 400,
+          fontSize: "14px",
+          lineHeight: 1.55,
+          color: TEXT_DIM,
+        }}
+      >
         {p.body}
       </p>
     </article>
@@ -120,20 +170,65 @@ function ProblemCard({ p }: { p: (typeof PROBLEMS)[number] }) {
 
 export function ProblemSection() {
   return (
-    <section className="relative py-28 lg:py-40">
+    <section
+      className="relative py-28 lg:py-40"
+      style={{ background: PAGE_BG }}
+    >
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-        <SectionHeader
-          eyebrow="The operational tax"
-          title="Every multi-unit business pays it. Most never measure it."
-          description="Four categories of compounding waste sit beneath every franchise P&L. Ezra surfaces them — and closes them — without adding headcount."
-        />
+        {/* Eyebrow — DM Mono */}
+        <div
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontWeight: 400,
+            fontSize: "10px",
+            textTransform: "uppercase",
+            letterSpacing: "0.22em",
+            color: CYAN,
+            marginBottom: "20px",
+          }}
+        >
+          The operational tax
+        </div>
 
+        {/* Section heading — DM Sans 300 Light */}
+        <h2
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 300,
+            fontSize: "clamp(36px, 5vw, 64px)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.035em",
+            color: TEXT,
+            maxWidth: "22ch",
+          }}
+        >
+          Every multi-unit business pays it. Most never measure it.
+        </h2>
+
+        {/* Description — DM Sans Regular */}
+        <p
+          style={{
+            marginTop: "16px",
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: 1.55,
+            color: TEXT_DIM,
+            maxWidth: "56ch",
+          }}
+        >
+          Four categories of compounding waste sit beneath every franchise P&L.
+          Ezra surfaces them — and closes them — without adding headcount.
+        </p>
+
+        {/* Card grid — hairline cyan border, 1px gap between cards */}
         <div
           className="mt-16 grid overflow-hidden rounded-2xl md:grid-cols-2"
           style={{
-            border: `1px solid ${BLUE_MID}`,
+            border: `1px solid ${CYAN_BORDER}`,
             gap: "1px",
-            background: BLUE_MID,
+            // Gap color = hairline cyan — creates the divider lines between cards
+            background: CYAN_BORDER,
           }}
         >
           {PROBLEMS.map((p) => (
