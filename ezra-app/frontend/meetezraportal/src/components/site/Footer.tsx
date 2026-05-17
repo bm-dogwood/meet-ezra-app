@@ -8,8 +8,8 @@ const t = {
   bgCard: "#141417",
   borderDark: "#27272A",
   textPrimary: "#FAFAFA",
-  textBody: "#71717A", // captions, metadata, hints
-  textDisabled: "#A1A1AA", // tertiary / disabled
+  textBody: "#71717A",
+  textDisabled: "#A1A1AA",
   cyan400: "#22D3EE",
   cyan500: "#06B6D4",
 };
@@ -40,9 +40,55 @@ const FOOTER_LINKS: Record<string, { href: string; label: string }[]> = {
 export default function Footer() {
   return (
     <>
-      {/* DM Sans — sole typeface per brand spec 03 */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+        .ezra-footer-grid {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr 1fr;
+          gap: 48px;
+        }
+
+        .ezra-footer-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+        }
+
+        .ezra-footer-legal {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+          .ezra-footer-grid {
+            grid-template-columns: 1fr 1fr !important;
+            gap: 36px 24px !important;
+          }
+
+          .ezra-footer-brand {
+            grid-column: 1 / -1;
+          }
+
+          .ezra-footer-bottom {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+          }
+
+          .ezra-footer-legal {
+            gap: 20px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .ezra-footer-grid {
+            grid-template-columns: 1fr 1fr !important;
+          }
+        }
       `}</style>
 
       <footer
@@ -54,7 +100,7 @@ export default function Footer() {
           overflow: "hidden",
         }}
       >
-        {/* Single hairline accent at top — one decoration allowed per principle 03 */}
+        {/* Single hairline accent at top */}
         <div
           style={{
             position: "absolute",
@@ -69,18 +115,15 @@ export default function Footer() {
 
         {/* ── Main grid ── */}
         <div
+          className="ezra-footer-grid"
           style={{
             maxWidth: 1200,
             margin: "0 auto",
-            padding: "72px 32px 56px",
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr 1fr 1fr",
-            gap: 48,
+            padding: "64px 20px 48px",
           }}
         >
           {/* Brand column */}
-          <div>
-            {/* Logomark — identical to Header: cyan gradient badge + DM Sans 600 / 0.18em */}
+          <div className="ezra-footer-brand">
             <Link
               href="/"
               style={{
@@ -102,7 +145,7 @@ export default function Footer() {
                   justifyContent: "center",
                   fontSize: 13,
                   fontWeight: 700,
-                  color: t.bgPage,
+                  color: "white",
                   flexShrink: 0,
                 }}
               >
@@ -121,7 +164,6 @@ export default function Footer() {
               </span>
             </Link>
 
-            {/* Body copy — 14px / 400 / lh 1.55 per type spec, measure ≤70ch */}
             <p
               style={{
                 fontSize: 14,
@@ -140,7 +182,6 @@ export default function Footer() {
           {/* Link columns */}
           {Object.entries(FOOTER_LINKS).map(([section, links]) => (
             <div key={section}>
-              {/* Eyebrow — 10px / 500 / 0.18em per typography spec */}
               <p
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
@@ -149,7 +190,7 @@ export default function Footer() {
                   letterSpacing: "0.18em",
                   textTransform: "uppercase",
                   color: t.textBody,
-                  margin: "0 0 18px 0",
+                  margin: "0 0 16px 0",
                 }}
               >
                 {section}
@@ -199,15 +240,11 @@ export default function Footer() {
         {/* ── Bottom bar ── */}
         <div style={{ borderTop: `1px solid ${t.borderDark}` }}>
           <div
+            className="ezra-footer-bottom"
             style={{
               maxWidth: 1200,
               margin: "0 auto",
-              padding: "16px 32px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 16,
-              flexWrap: "wrap",
+              padding: "16px 20px",
             }}
           >
             {/* Copyright */}
@@ -223,7 +260,7 @@ export default function Footer() {
               © 2026 Ezra AI, Inc. All rights reserved.
             </span>
 
-            {/* Status indicator — emerald, not cyan, keeps module accent rule */}
+            {/* Status indicator */}
             <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
               <span
                 style={{
@@ -232,7 +269,6 @@ export default function Footer() {
                   borderRadius: "50%",
                   background: "#10B981",
                   flexShrink: 0,
-                  // subtle glow is the only shadow-like effect allowed — functional signal
                   boxShadow: "0 0 6px rgba(16,185,129,0.55)",
                 }}
               />
@@ -250,7 +286,7 @@ export default function Footer() {
             </div>
 
             {/* Legal links */}
-            <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div className="ezra-footer-legal">
               {[
                 { href: "/privacy", label: "Privacy" },
                 { href: "/terms", label: "Terms" },

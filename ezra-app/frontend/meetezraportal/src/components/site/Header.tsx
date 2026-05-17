@@ -29,7 +29,6 @@ const OVERVIEW_ITEMS = [
     href: "/#how-it-works",
     description: "Architecture under the hood",
   },
-
   {
     label: "Platform",
     href: "/#platform",
@@ -89,7 +88,7 @@ function ActiveBar() {
     <span
       style={{
         position: "absolute",
-        bottom: -1, // sits on the header border
+        bottom: -1,
         left: 8,
         right: 8,
         height: 1,
@@ -100,7 +99,67 @@ function ActiveBar() {
   );
 }
 
-// ─── Overview Dropdown ──────────────────────────────────────────────────────
+// ─── Hamburger icon ─────────────────────────────────────────────────────────
+function HamburgerIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+    >
+      <style>{`
+        .ham-top {
+          transition: transform 250ms ease, opacity 250ms ease;
+          transform-origin: center;
+        }
+        .ham-mid {
+          transition: transform 250ms ease, opacity 250ms ease;
+          transform-origin: center;
+        }
+        .ham-bot {
+          transition: transform 250ms ease, opacity 250ms ease;
+          transform-origin: center;
+        }
+        .ham-open .ham-top { transform: translateY(4px) rotate(45deg); }
+        .ham-open .ham-mid { opacity: 0; transform: scaleX(0); }
+        .ham-open .ham-bot { transform: translateY(-4px) rotate(-45deg); }
+      `}</style>
+      <g className={open ? "ham-open" : ""}>
+        <rect
+          className="ham-top"
+          x="3"
+          y="5"
+          width="14"
+          height="1.5"
+          rx="1"
+          fill={t.textMeta}
+        />
+        <rect
+          className="ham-mid"
+          x="3"
+          y="9.25"
+          width="14"
+          height="1.5"
+          rx="1"
+          fill={t.textMeta}
+        />
+        <rect
+          className="ham-bot"
+          x="3"
+          y="13.5"
+          width="14"
+          height="1.5"
+          rx="1"
+          fill={t.textMeta}
+        />
+      </g>
+    </svg>
+  );
+}
+
+// ─── Overview Dropdown (desktop) ────────────────────────────────────────────
 function OverviewDropdown({
   open,
   onClose,
@@ -121,7 +180,6 @@ function OverviewDropdown({
         border: `1px solid ${t.borderDark}`,
         borderRadius: 10,
         padding: 6,
-        // No drop shadows on cards per brand principle 03
         boxShadow: "0 24px 48px rgba(0,0,0,0.6)",
         opacity: open ? 1 : 0,
         pointerEvents: open ? "auto" : "none",
@@ -129,7 +187,6 @@ function OverviewDropdown({
         zIndex: 100,
       }}
     >
-      {/* Hairline top accent — one accent treatment allowed */}
       <div
         style={{
           position: "absolute",
@@ -140,8 +197,6 @@ function OverviewDropdown({
           background: `linear-gradient(90deg, transparent, ${t.cyan400}55, transparent)`,
         }}
       />
-
-      {/* Eyebrow label — 10px / 500 / 0.18em per typography spec */}
       <p
         style={{
           fontFamily: "'DM Sans', sans-serif",
@@ -156,8 +211,6 @@ function OverviewDropdown({
       >
         On this page
       </p>
-
-      {/* 2-column grid of section links */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
         {OVERVIEW_ITEMS.map(({ label, href, description }) => (
           <Link
@@ -210,36 +263,304 @@ function OverviewDropdown({
   );
 }
 
-// ─── Header ─────────────────────────────────────────────────────────────────
-export default function Header() {
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+// ─── Mobile menu ─────────────────────────────────────────────────────────────
+function MobileMenu({
+  open,
+  pathname,
+  onClose,
+}: {
+  open: boolean;
+  pathname: string;
+  onClose: () => void;
+}) {
+  const [overviewOpen, setOverviewOpen] = useState(false);
 
-  // Close on outside click
+  // Reset overview when menu closes
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  // Close on route change
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    if (!open) setOverviewOpen(false);
+  }, [open]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
     <>
-      {/* DM Sans — sole typeface per brand spec 03 */}
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: "fixed",
+          inset: 0,
+          top: 64,
+          background: "rgba(0,0,0,0.5)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: "opacity 200ms ease",
+          zIndex: 40,
+        }}
+      />
+
+      {/* Drawer */}
+      <div
+        style={{
+          position: "fixed",
+          top: 64,
+          left: 0,
+          right: 0,
+          background: t.bgCard,
+          borderBottom: `1px solid ${t.borderDark}`,
+          zIndex: 45,
+          transform: open ? "translateY(0)" : "translateY(-8px)",
+          opacity: open ? 1 : 0,
+          pointerEvents: open ? "auto" : "none",
+          transition: "transform 220ms ease, opacity 220ms ease",
+          fontFamily: "'DM Sans', sans-serif",
+          overflowY: "auto",
+          maxHeight: "calc(100dvh - 64px)",
+        }}
+      >
+        <nav style={{ padding: "8px 0" }}>
+          {NAV_ITEMS.map(({ label, href, dropdown }) => {
+            const active = isActive(href);
+
+            if (dropdown) {
+              return (
+                <div key={href}>
+                  <button
+                    onClick={() => setOverviewOpen((v) => !v)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      padding: "13px 20px",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: 15,
+                      fontWeight: active ? 500 : 400,
+                      color: active ? t.textPrimary : t.textMeta,
+                      letterSpacing: "-0.01em",
+                      textAlign: "left",
+                    }}
+                  >
+                    <span
+                      style={{ display: "flex", alignItems: "center", gap: 8 }}
+                    >
+                      {active && (
+                        <span
+                          style={{
+                            width: 3,
+                            height: 3,
+                            borderRadius: "50%",
+                            background: t.cyan400,
+                            flexShrink: 0,
+                          }}
+                        />
+                      )}
+                      {label}
+                    </span>
+                    <Chevron open={overviewOpen} />
+                  </button>
+
+                  {/* Collapsible overview sub-items */}
+                  <div
+                    style={{
+                      maxHeight: overviewOpen ? 600 : 0,
+                      overflow: "hidden",
+                      transition: "max-height 280ms ease",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "4px 20px 8px",
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gap: 4,
+                        borderTop: `1px solid ${t.borderDark}`,
+                        paddingTop: 10,
+                        marginTop: 2,
+                      }}
+                    >
+                      {OVERVIEW_ITEMS.map(
+                        ({ label: subLabel, href: subHref, description }) => (
+                          <Link
+                            key={subHref}
+                            href={subHref}
+                            onClick={onClose}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 2,
+                              padding: "10px 12px",
+                              borderRadius: 8,
+                              textDecoration: "none",
+                              background: "rgba(255,255,255,0.03)",
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: 13,
+                                fontWeight: 500,
+                                color: t.textPrimary,
+                                letterSpacing: "-0.01em",
+                              }}
+                            >
+                              {subLabel}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: 11,
+                                color: t.textMeta,
+                                lineHeight: 1.4,
+                              }}
+                            >
+                              {description}
+                            </span>
+                          </Link>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={onClose}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  padding: "13px 20px",
+                  fontSize: 15,
+                  fontWeight: active ? 500 : 400,
+                  color: active ? t.textPrimary : t.textMeta,
+                  textDecoration: "none",
+                  letterSpacing: "-0.01em",
+                }}
+              >
+                {active && (
+                  <span
+                    style={{
+                      width: 3,
+                      height: 3,
+                      borderRadius: "50%",
+                      background: t.cyan400,
+                      flexShrink: 0,
+                    }}
+                  />
+                )}
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* CTA row */}
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            padding: "12px 20px 20px",
+            borderTop: `1px solid ${t.borderDark}`,
+          }}
+        >
+          <Link
+            href="/login"
+            onClick={onClose}
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 14,
+              fontWeight: 400,
+              padding: "10px 16px",
+              borderRadius: 7,
+              border: `1px solid ${t.borderDark}`,
+              color: t.textMeta,
+              textDecoration: "none",
+            }}
+          >
+            Sign In
+          </Link>
+          <Link
+            href="/contact"
+            onClick={onClose}
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 14,
+              fontWeight: 600,
+              padding: "10px 16px",
+              borderRadius: 7,
+              background: `linear-gradient(135deg, ${t.cyan400}, ${t.cyan500})`,
+              color: t.bgPage,
+              textDecoration: "none",
+            }}
+          >
+            Request Demo
+          </Link>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Header ─────────────────────────────────────────────────────────────────
+export default function Header() {
+  const pathname = usePathname();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  // Close everything on route change
+  useEffect(() => {
+    setDropdownOpen(false);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  // Lock body scroll when mobile menu open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  return (
+    <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+        .ezra-nav-desktop { display: flex; align-items: center; }
+        .ezra-cta-desktop { display: flex; align-items: center; gap: 4px; }
+        .ezra-hamburger { display: none; }
+
+        @media (max-width: 768px) {
+          .ezra-nav-desktop { display: none !important; }
+          .ezra-cta-desktop { display: none !important; }
+          .ezra-hamburger { display: flex !important; align-items: center; justify-content: center; }
+        }
       `}</style>
 
       <header
@@ -264,13 +585,13 @@ export default function Header() {
             maxWidth: 1200,
             width: "100%",
             margin: "0 auto",
-            padding: "0 32px",
+            padding: "0 20px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
         >
-          {/* ── Logomark — always cyan gradient, DM Sans 600, 0.18em per spec ── */}
+          {/* ── Logomark ── */}
           <Link
             href="/"
             style={{
@@ -278,6 +599,7 @@ export default function Header() {
               alignItems: "center",
               gap: 10,
               textDecoration: "none",
+              flexShrink: 0,
             }}
           >
             <div
@@ -310,8 +632,8 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* ── Navigation ── */}
-          <nav style={{ display: "flex", alignItems: "center" }}>
+          {/* ── Desktop Navigation ── */}
+          <nav className="ezra-nav-desktop">
             {NAV_ITEMS.map(({ label, href, dropdown }) => {
               const active = isActive(href);
 
@@ -323,7 +645,7 @@ export default function Header() {
                     style={{ position: "relative" }}
                   >
                     <button
-                      onClick={() => setOpen((v) => !v)}
+                      onClick={() => setDropdownOpen((v) => !v)}
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -335,30 +657,31 @@ export default function Header() {
                         cursor: "pointer",
                         fontFamily: "'DM Sans', sans-serif",
                         fontSize: 13,
-                        fontWeight: active || open ? 500 : 400,
-                        color: active || open ? t.textPrimary : t.textMeta,
+                        fontWeight: active || dropdownOpen ? 500 : 400,
+                        color:
+                          active || dropdownOpen ? t.textPrimary : t.textMeta,
                         letterSpacing: "-0.01em",
                         position: "relative",
                         transition: "color 150ms",
                       }}
                       onMouseEnter={(e) => {
-                        if (!active && !open)
+                        if (!active && !dropdownOpen)
                           (e.currentTarget as HTMLElement).style.color =
                             "#D4D4D8";
                       }}
                       onMouseLeave={(e) => {
-                        if (!active && !open)
+                        if (!active && !dropdownOpen)
                           (e.currentTarget as HTMLElement).style.color =
                             t.textMeta;
                       }}
                     >
                       {label}
-                      <Chevron open={open} />
+                      <Chevron open={dropdownOpen} />
                       {active && <ActiveBar />}
                     </button>
                     <OverviewDropdown
-                      open={open}
-                      onClose={() => setOpen(false)}
+                      open={dropdownOpen}
+                      onClose={() => setDropdownOpen(false)}
                     />
                   </div>
                 );
@@ -397,8 +720,8 @@ export default function Header() {
             })}
           </nav>
 
-          {/* ── CTA group ── */}
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {/* ── Desktop CTA group ── */}
+          <div className="ezra-cta-desktop">
             <Link
               href="/login"
               style={{
@@ -421,8 +744,6 @@ export default function Header() {
             >
               Sign In
             </Link>
-
-            {/* Primary CTA — cyan gradient, dark text, no shadow per principle 03 */}
             <Link
               href="/contact"
               style={{
@@ -441,8 +762,33 @@ export default function Header() {
               Request Demo
             </Link>
           </div>
+
+          {/* ── Hamburger (mobile only) ── */}
+          <button
+            className="ezra-hamburger"
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            style={{
+              background: "transparent",
+              border: "none",
+              cursor: "pointer",
+              padding: 8,
+              borderRadius: 6,
+              display: "none", // overridden by CSS class
+            }}
+          >
+            <HamburgerIcon open={mobileOpen} />
+          </button>
         </div>
       </header>
+
+      {/* ── Mobile drawer ── */}
+      <MobileMenu
+        open={mobileOpen}
+        pathname={pathname}
+        onClose={() => setMobileOpen(false)}
+      />
     </>
   );
 }
