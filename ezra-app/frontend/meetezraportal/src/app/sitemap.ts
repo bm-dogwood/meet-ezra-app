@@ -64,7 +64,25 @@ const STATIC_MARKETING_PAGES: MetadataRoute.Sitemap = [
     priority: 0.7,
   },
   {
-    url: `${BASE_URL}/pricing`,
+    url: `${BASE_URL}/features`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.9,
+  },
+  {
+    url: `${BASE_URL}/solutions`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    url: `${BASE_URL}/platform`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    url: `${BASE_URL}/bots`,
     lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.8,
@@ -80,6 +98,18 @@ const STATIC_MARKETING_PAGES: MetadataRoute.Sitemap = [
     lastModified: new Date(),
     changeFrequency: "monthly",
     priority: 0.6,
+  },
+  {
+    url: `${BASE_URL}/privacy`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.3,
+  },
+  {
+    url: `${BASE_URL}/terms`,
+    lastModified: new Date(),
+    changeFrequency: "yearly",
+    priority: 0.3,
   },
 ];
 

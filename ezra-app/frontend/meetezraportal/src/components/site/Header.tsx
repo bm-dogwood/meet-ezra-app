@@ -419,7 +419,7 @@ function MobileMenu({
                               {description}
                             </span>
                           </Link>
-                        )
+                        ),
                       )}
                     </div>
                   </div>
