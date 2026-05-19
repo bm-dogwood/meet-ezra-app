@@ -23,6 +23,7 @@
 import { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
+import { BLOG_POSTS } from "@/lib/blog";
 
 const BASE_URL = "https://meetezra.bot";
 
@@ -163,29 +164,13 @@ function discoverMarketingPages(): MetadataRoute.Sitemap {
 }
 
 // ── Blog pages ─────────────────────────────────────────────────────────────
-// Replace this with your CMS fetch or filesystem scan.
+// Reads from the TypeScript data layer in src/lib/blog.ts.
+// To add a new post: add an entry to BLOG_POSTS and a content component to blog-content.tsx.
 async function getBlogSlugs(): Promise<{ slug: string; updatedAt: Date }[]> {
-  // ── Option A: filesystem-based MDX blog ──────────────────────────────
-  const blogDir = path.join(process.cwd(), "src", "content", "blog");
-  if (fs.existsSync(blogDir)) {
-    return fs
-      .readdirSync(blogDir)
-      .filter((f) => f.endsWith(".mdx") || f.endsWith(".md"))
-      .map((f) => ({
-        slug: f.replace(/\.(mdx|md)$/, ""),
-        updatedAt: fs.statSync(path.join(blogDir, f)).mtime,
-      }));
-  }
-
-  // ── Option B: headless CMS fetch (uncomment and adapt) ───────────────
-  // const res = await fetch(`${process.env.CMS_URL}/api/posts?fields=slug,updatedAt`, {
-  //   next: { revalidate: 3600 },
-  // });
-  // const { posts } = await res.json();
-  // return posts.map((p: any) => ({ slug: p.slug, updatedAt: new Date(p.updatedAt) }));
-
-  // ── Fallback: no blog posts yet ──────────────────────────────────────
-  return [];
+  return BLOG_POSTS.map((post) => ({
+    slug: post.slug,
+    updatedAt: new Date(post.publishedAt),
+  }));
 }
 
 // ── Main sitemap export ────────────────────────────────────────────────────
