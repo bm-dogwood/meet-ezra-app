@@ -53,6 +53,7 @@ const NAV_ITEMS = [
   { label: "The Ezra Family", href: "/bots", dropdown: false },
   { label: "Solutions", href: "/solutions", dropdown: false },
   { label: "Platform", href: "/platform", dropdown: false },
+  { label: "Blog", href: "/blog", dropdown: false },
   { label: "About", href: "/about", dropdown: false },
   { label: "Contact", href: "/contact", dropdown: false },
 ] as const;

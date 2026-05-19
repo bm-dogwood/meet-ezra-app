@@ -56,7 +56,7 @@ export default function BlogIndexClient() {
           <div className="relative max-w-[1200px] mx-auto px-6 lg:px-10">
             <div className="blog-reveal mb-4 inline-flex items-center gap-2">
               <span
-                className="text-[10px] tracking-[0.22em] uppercase font-medium"
+                className="text-[16px] tracking-[0.22em] uppercase font-medium"
                 style={{ color: "#06B6D4" }}
               >
                 Franchise Intelligence
@@ -80,8 +80,8 @@ export default function BlogIndexClient() {
               style={{ fontSize: "16px", color: "#71717A", lineHeight: 1.6 }}
             >
               Loss prevention, AI scheduling, multi-unit analytics, and
-              operational strategy — written for operators running real franchise
-              networks.
+              operational strategy — written for operators running real
+              franchise networks.
             </p>
           </div>
         </section>
